@@ -91,6 +91,7 @@
 #define LAYER_Excel_TBD 27
 #define LAYER_LoL 28
 #define LAYER_Gaming_TBD 29
+#define LAYER_AI_Claude 30
 
 /* To deal with the situation where there is no Lower layer, to keep &lower happy */
 #ifndef LAYER_Lower
@@ -10126,6 +10127,158 @@ macros {
   #define SCRL_LEFT
   #define SCRL_RIGHT
 #endif
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// AI control layer -- Claude Code
+//
+// Ported from https://github.com/dongdongbh/glove80 (docs/ai-control-layers.md).
+// Only the Claude half is installed. The Codex half wants position 68, which
+// here is `&stumb LAYER_Excel LSFT`, so it is deliberately left out.
+//
+// Hold the right C2R6 thumb (position 75) and operate the LEFT hand.
+// Tapping it is still a one-shot Right Shift, exactly as before -- the hold
+// resolves only when a left-hand key is pressed, so same-hand typing and the
+// shift tap both survive. Releasing returns straight to the base layer.
+//
+// Position 75 was free: it held `&stumb LAYER_World RSFT` in stock Engrammer
+// and became a plain `&kp RSHFT` when the World layer was removed.
+//
+// Every key emits a native shortcut or types a built-in slash command, so no
+// host bridge, terminal binding, or Claude keybinding file is required.
+//
+//////////////////////////////////////////////////////////////////////////////
+
+//
+// Define AI_VIM_COMPOSER to prefix slash commands with ESC then I, which
+// normalises a Vim-mode composer into insert mode first. Left undefined here:
+// Claude Code's composer is not Vim-mode by default, so commands type directly.
+//
+#ifdef AI_VIM_COMPOSER
+#define AI_COMPOSER_PREFIX &kp ESC &kp I
+#else
+#define AI_COMPOSER_PREFIX
+#endif
+
+/ {
+  behaviors {
+    //
+    // Cross-hand positional hold-tap. `hold-trigger-key-positions` restricted
+    // to the opposite hand keeps the trigger finger out of the operative
+    // keywell; `hold-trigger-on-release` defers the decision so home-row mods
+    // still resolve first.
+    //
+    ai_right_trigger: ai_right_cross_hand_layer_shift {
+      compatible = "zmk,behavior-hold-tap";
+      flavor = THUMB_HOLDING_TYPE;
+      hold-trigger-key-positions = <LEFT_HAND_KEYS>;
+      hold-trigger-on-release;
+      tapping-term-ms = <THUMB_HOLDING_TIME>;
+      quick-tap-ms = <THUMB_REPEAT_DECAY>; // enable repeat
+      #binding-cells = <2>;
+      bindings = <&mo>, <&sticky_key_oneshot>;
+    };
+  };
+
+  macros {
+    ZMK_MACRO(ai_claude_agents,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp A &kp G &kp E &kp N &kp T &kp S &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_claude_background,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(X) &kp LC(B)>;
+    )
+
+    ZMK_MACRO(ai_claude_btw,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp B &kp T &kp W &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_claude_copy,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp O &kp P &kp Y &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_claude_effort_down,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LA(P) &kp LEFT>;
+    )
+
+    ZMK_MACRO(ai_claude_effort_up,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LA(P) &kp RIGHT>;
+    )
+
+    ZMK_MACRO(ai_claude_new,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp L &kp E &kp A &kp R &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_compact,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp O &kp M &kp P &kp A &kp C &kp T &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_diff,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp D &kp I &kp F &kp F &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_model,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp M &kp O &kp D &kp E &kp L &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_permissions,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp P &kp E &kp R &kp M &kp I &kp S &kp S &kp I &kp O &kp N &kp S &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_plan,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp P &kp L &kp A &kp N &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_resume,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp R &kp E &kp S &kp U &kp M &kp E &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_review,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp R &kp E &kp V &kp I &kp E &kp W &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_status,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp S &kp T &kp A &kp T &kp U &kp S &kp ENTER>;
+    )
+
+    ZMK_MACRO(ai_usage,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp U &kp S &kp A &kp G &kp E &kp ENTER>;
+    )
+  };
+};
+
 /*HACK*//{
 
 };
@@ -10303,7 +10456,7 @@ macros {
                         &none                         &kp Q                         &kp W                         &kp E                         &kp R   &kp T                                                                                                                                            &kp Y                          &kp U                          &kp I                          &kp O                             &kp P                     &kp MINUS
                     &kp EQUAL  &LeftPinky (A, LAYER_QWERTY)  &LeftRingy (S, LAYER_QWERTY)  &LeftMiddy (D, LAYER_QWERTY)  &LeftIndex (F, LAYER_QWERTY)   &kp G                                                                                                                                            &kp H  &RightIndex (J, LAYER_QWERTY)  &RightMiddy (K, LAYER_QWERTY)  &RightRingy (L, LAYER_QWERTY)  &RightPinky (SEMI, LAYER_QWERTY)                       &kp SQT
  &sticky_key_modtap LSFT LSFT                         &kp Z                         &kp X                         &kp C                         &kp V   &kp B      &thumb LAYER_Function ESC             &mo LAYER_Lower  &kp PG_UP    &thums_up  &thumb LAYER_Lower INSERT  &thumb LAYER_System ENTER   &kp N                          &kp M                      &kp COMMA                        &kp DOT                          &kp FSLH  &sticky_key_modtap RSFT RSFT
-         &magic LAYER_Magic 0                      &kp BSLH                  &parang_left                 &parang_right       &stumb LAYER_Excel LSFT          &thumb LAYER_Cursor BACKSPACE  &thumb LAYER_Number DELETE  &kp PG_DN  &thums_down     &thumb LAYER_Mouse TAB  &space LAYER_Symbol SPACE                              &kp RSHFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
+         &magic LAYER_Magic 0                      &kp BSLH                  &parang_left                 &parang_right       &stumb LAYER_Excel LSFT          &thumb LAYER_Cursor BACKSPACE  &thumb LAYER_Number DELETE  &kp PG_DN  &thums_down     &thumb LAYER_Mouse TAB  &space LAYER_Symbol SPACE      &ai_right_trigger LAYER_AI_Claude RSFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
             >;
         };
 
@@ -10623,6 +10776,17 @@ macros {
   &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
   &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_AI_Claude {
+            bindings = <
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &ai_usage  &ai_claude_background  &kp LC(S)  &kp LA(T)  &ai_claude_btw  &ai_claude_agents  &none  &none  &none  &none  &none  &none
+                &ai_claude_new  &ai_permissions  &ai_claude_effort_down  &ai_claude_effort_up  &ai_model  &kp LC(O)  &none  &none  &none  &none  &none  &none
+                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &none  &none  &none  &none  &none  &none
+                &ai_resume  &ai_compact  &ai_diff  &ai_review  &ai_plan  &kp LC(G)  &kp ENTER  &kp LC(J)  &ai_claude_background  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &trans  &kp Y  &kp N  &kp LC(C)  &none  &none  &none  &trans  &none  &none  &none  &none
             >;
         };
 
