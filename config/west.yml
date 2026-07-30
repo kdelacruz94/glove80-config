@@ -5,10 +5,28 @@ manifest:
     # 2025-06-23 build failed.
     - name: moergo-sc
       url-base: https://github.com/moergo-sc
+    - name: ovandongen
+      url-base: https://github.com/ovandongen
   projects:
     - name: zmk
       remote: moergo-sc
       revision: main
       import: app/west.yml
+
+    # Raw HID transport + layer/key-event reporting, so MoergoLayerViz v2.x can
+    # track live layer state. Stock (Layout Editor) firmware does not expose the
+    # Raw HID endpoint at all, which is why this has to be a repo build.
+    #
+    # NOTE: zmk-raw-hid comes from ovandongen's FORK, not zzeneg/zmk-raw-hid
+    # upstream, even though the app credits zzeneg. The fork carries
+    # "make HID report buffer static so async EasyDMA can't read a dead stack
+    # frame" (2026-06-24), which upstream does not have. Matching
+    # ovandongen/glove80-zmk-config-west, the only Glove80 config known green.
+    - name: zmk-raw-hid
+      remote: ovandongen
+      revision: main
+    - name: zmk-hid-viz
+      remote: ovandongen
+      revision: main
   self:
     path: config

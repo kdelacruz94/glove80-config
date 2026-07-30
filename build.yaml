@@ -1,6 +1,9 @@
 # Generates the GitHub Actions build matrix.
 # glove80_lh is the central (left) half; glove80_rh is the peripheral (right).
+# The raw_hid_adapter shield goes on the central half only -- it is what adds
+# the second USB HID device that carries the visualizer's Raw HID endpoint.
 ---
 include:
   - board: glove80_lh
+    shield: raw_hid_adapter
   - board: glove80_rh
