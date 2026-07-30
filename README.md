@@ -31,9 +31,17 @@ Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persist
 | `config/west.yml` | Firmware source + modules. |
 | `build.yaml` | Board/shield matrix. |
 
-The `.json` is a single ~660 KB line for `custom_defined_behaviors`, so **its diffs
-are not readable** — that's expected. Read `glove80.keymap` for what changed; the
-JSON is carried for the visualizer and for re-import into the editor.
+The `.json` is pretty-printed, so key bindings, layer names, combos and macros all
+diff line by line. Two lines are the exception and will show as whole-line churn:
+
+| Line | Field | Size |
+|---|---|---|
+| 30 | `custom_defined_behaviors` | ~342 KB |
+| 31 | `custom_devicetree` | ~23 KB |
+
+That's where the Engrammer hold-taps, combos and RGB indicator blocks live. When a
+change lands in either, read `config/glove80.keymap` instead — it carries the same
+content as real DTS and diffs properly.
 
 ## Workflow
 
