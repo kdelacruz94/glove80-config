@@ -3,4 +3,13 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    # Must be MoErgo's copy of the reusable workflow, not zmkfirmware's.
+    # zmkfirmware/zmk@main has moved to Zephyr 4.1 hardware-model-v2, whose
+    # board-resolution step expects a `qualifiers` key that the Glove80 board
+    # definitions in moergo-sc/zmk do not carry -- the build compiles ~317/344
+    # objects and then dies with `KeyError: 'qualifiers'`.
+    #
+    # NOTE: moergo-sc/glove80-zmk-config-west (MoErgo's own template) still
+    # points at zmkfirmware and is stale for this reason. The working
+    # reference is ovandongen/glove80-zmk-config-west.
+    uses: moergo-sc/zmk/.github/workflows/build-user-config.yml@main
