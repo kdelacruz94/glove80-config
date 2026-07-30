@@ -11,7 +11,7 @@ firmware can carry things the Layout Editor cannot express.
 
 | | |
 |---|---|
-| Layers | 30 |
+| Layers | 31 |
 | Base | QWERTY (alternate alphabets, macOS, World, emoji all removed) |
 | Colors | Everforest Dark Hard |
 | Editor UUID | `15da8b74-bc9e-47fe-8334-34ea6d2318dc` |
@@ -20,6 +20,27 @@ Layer families beyond stock Engrammer: an **Excel** family (Excel, Excel_WordPP,
 Excel_Code, Excel_TBD) for Office/dev contexts, and a **Gaming** family (Gaming/WoW,
 Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persistent
 `&to`, using the same mechanism Engrammer uses for base-alphabet switching.
+
+### AI control layer (layer 30, `AI_Claude`)
+
+Hold the **right C2R6 thumb** (position 75) and operate the **left hand** to drive
+Claude Code; tapping that key is still a one-shot Right Shift, and releasing
+returns to base. Ported from
+[dongdongbh/glove80](https://github.com/dongdongbh/glove80).
+
+It's a cross-hand positional hold-tap: the hold resolves only when a left-hand key
+is pressed, so same-hand typing and the shift tap both survive.
+
+Slash commands are typed directly. Upstream defines `AI_VIM_COMPOSER` to prefix
+them with `ESC` `I` for a Vim-mode composer — left undefined here, since Claude
+Code's composer isn't Vim-mode by default. Define it if you switch.
+
+Two deliberate omissions:
+
+- **Codex half not installed.** It wants position 68, which here is
+  `&stumb LAYER_Excel LSFT`, so it would displace the Excel thumb.
+- **QWERTY only.** Maple also has a free `&kp RSHFT` at 75, but it's the
+  MapleStory layer — the trigger would sit under a thumb mid-game for no gain.
 
 ## Files
 
