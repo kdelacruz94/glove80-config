@@ -1,12 +1,13 @@
 manifest:
   remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
-    # Additional modules containing boards/shields/custom code can be listed here as well
-    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
+    # The Glove80 boards (glove80_lh / glove80_rh) live ONLY in MoErgo's fork.
+    # Upstream zmkfirmware/zmk does not define them -- pointing here was why the
+    # 2025-06-23 build failed.
+    - name: moergo-sc
+      url-base: https://github.com/moergo-sc
   projects:
     - name: zmk
-      remote: zmkfirmware
+      remote: moergo-sc
       revision: main
       import: app/west.yml
   self:

@@ -1,0 +1,6 @@
+# Keep everything LF in the repo regardless of which machine exports the layout.
+# Editor exports are LF; without this, a Windows checkout round-trips them to
+# CRLF and every re-export shows up as a whole-file diff.
+* text=auto eol=lf
+*.uf2 binary
+*.png binary
