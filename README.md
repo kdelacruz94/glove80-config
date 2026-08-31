@@ -30,7 +30,7 @@ returns to base. Ported from
 [dongdongbh/glove80](https://github.com/dongdongbh/glove80).
 
 It's a positional hold-tap: the hold resolves on the left hand plus the nine herdr
-positions (28–31, 40–44) rather than the left hand alone, so Right Shift still
+positions (28–31, 41–45) rather than the left hand alone, so Right Shift still
 shifts every other right-hand key.
 
 Slash commands are typed directly. Upstream defines `AI_VIM_COMPOSER` to prefix

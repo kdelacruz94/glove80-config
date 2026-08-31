@@ -10163,13 +10163,13 @@ macros {
 #endif
 
 //
-// The nine right-hand positions the herdr half occupies: the home row H J K L
-// (vim pane focus) and SEMI beside it, plus Y U I O on the row above. Only
-// these are added to the trigger's hold-trigger-key-positions -- every other
-// right-hand key still resolves the trigger as a tap, so Right Shift keeps
-// shifting them.
+// The nine right-hand positions the herdr half occupies: J K L SEMI (vim pane
+// focus, shifted one column right of the letters so the hand keeps its home
+// position) and SQT beside them, plus Y U I O on the row above. Only these are
+// added to the trigger's hold-trigger-key-positions -- every other right-hand
+// key still resolves the trigger as a tap, so Right Shift keeps shifting them.
 //
-#define AI_RIGHT_HAND_KEYS 28 29 30 31 40 41 42 43 44
+#define AI_RIGHT_HAND_KEYS 28 29 30 31 41 42 43 44 45
 
 / {
   behaviors {
@@ -10860,7 +10860,7 @@ macros {
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &ai_usage  &ai_claude_background  &kp LC(S)  &kp LA(T)  &ai_claude_btw  &ai_claude_agents  &none  &none  &none  &none  &none  &none
                 &ai_claude_new  &ai_permissions  &ai_claude_effort_down  &ai_claude_effort_up  &ai_model  &kp LC(O)  &ai_herdr_navigator  &ai_herdr_tab_prev  &ai_herdr_pane_cycle  &ai_herdr_tab_next  &none  &none
-                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &ai_herdr_pane_left  &ai_herdr_pane_down  &ai_herdr_pane_up  &ai_herdr_pane_right  &ai_herdr_zoom  &none
+                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &none  &ai_herdr_pane_left  &ai_herdr_pane_down  &ai_herdr_pane_up  &ai_herdr_pane_right  &ai_herdr_zoom
                 &ai_resume  &ai_compact  &ai_diff  &ai_review  &ai_plan  &kp LC(G)  &kp ENTER  &kp LC(J)  &ai_claude_background  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &trans  &kp Y  &kp N  &kp LC(C)  &none  &none  &none  &trans  &none  &none  &none  &none
             >;
