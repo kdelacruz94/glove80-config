@@ -10136,10 +10136,12 @@ macros {
 // Only the Claude half is installed. The Codex half wants position 68, which
 // here is `&stumb LAYER_Excel LSFT`, so it is deliberately left out.
 //
-// Hold the right C2R6 thumb (position 75) and operate the LEFT hand.
-// Tapping it is still a one-shot Right Shift, exactly as before -- the hold
-// resolves only when a left-hand key is pressed, so same-hand typing and the
-// shift tap both survive. Releasing returns straight to the base layer.
+// Hold the right C2R6 thumb (position 75) and operate the LEFT hand to drive
+// Claude Code, or the RIGHT home block to drive herdr, the terminal multiplexer
+// Claude Code runs inside. Tapping the thumb is still a one-shot Right Shift,
+// exactly as before -- the hold resolves only on the left hand plus the nine
+// herdr keys, so same-hand typing and the shift tap both survive. Releasing
+// returns straight to the base layer.
 //
 // Position 75 was free: it held `&stumb LAYER_World RSFT` in stock Engrammer
 // and became a plain `&kp RSHFT` when the World layer was removed.
@@ -10160,18 +10162,34 @@ macros {
 #define AI_COMPOSER_PREFIX
 #endif
 
+//
+// The nine right-hand positions the herdr half occupies: the home row H J K L
+// (vim pane focus) and SEMI beside it, plus Y U I O on the row above. Only
+// these are added to the trigger's hold-trigger-key-positions -- every other
+// right-hand key still resolves the trigger as a tap, so Right Shift keeps
+// shifting them.
+//
+#define AI_RIGHT_HAND_KEYS 28 29 30 31 40 41 42 43 44
+
 / {
   behaviors {
     //
-    // Cross-hand positional hold-tap. `hold-trigger-key-positions` restricted
-    // to the opposite hand keeps the trigger finger out of the operative
-    // keywell; `hold-trigger-on-release` defers the decision so home-row mods
-    // still resolve first.
+    // Positional hold-tap. `hold-trigger-key-positions` lists the left hand
+    // plus the nine herdr keys and nothing else, so the trigger finger stays
+    // out of the rest of its own keywell; `hold-trigger-on-release` defers the
+    // decision so home-row mods still resolve first.
+    //
+    // Adding AI_RIGHT_HAND_KEYS is what makes the herdr half reachable at all:
+    // with the list left-hand-only, any right-hand key pressed during the hold
+    // resolved the trigger as a tap, so those bindings could never fire. The
+    // cost is bounded to those nine keys -- holding this thumb and pressing one
+    // of them now navigates herdr instead of shifting the letter, which is the
+    // same-hand shift that touch typing already sends to the left shift.
     //
     ai_right_trigger: ai_right_cross_hand_layer_shift {
       compatible = "zmk,behavior-hold-tap";
       flavor = THUMB_HOLDING_TYPE;
-      hold-trigger-key-positions = <LEFT_HAND_KEYS>;
+      hold-trigger-key-positions = <LEFT_HAND_KEYS AI_RIGHT_HAND_KEYS>;
       hold-trigger-on-release;
       tapping-term-ms = <THUMB_HOLDING_TIME>;
       quick-tap-ms = <THUMB_REPEAT_DECAY>; // enable repeat
@@ -10233,6 +10251,64 @@ macros {
       wait-ms = <15>;
       tap-ms = <15>;
       bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp D &kp I &kp F &kp F &kp ENTER>;
+    )
+
+    //
+    // herdr navigation. The prefix is ctrl+b, sent and released before the
+    // action key -- never chorded with it -- so each macro is two taps.
+    //
+    ZMK_MACRO(ai_herdr_navigator,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp LA(T)>;
+    )
+
+    ZMK_MACRO(ai_herdr_pane_cycle,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp TAB>;
+    )
+
+    ZMK_MACRO(ai_herdr_pane_down,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp J>;
+    )
+
+    ZMK_MACRO(ai_herdr_pane_left,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp H>;
+    )
+
+    ZMK_MACRO(ai_herdr_pane_right,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp L>;
+    )
+
+    ZMK_MACRO(ai_herdr_pane_up,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp K>;
+    )
+
+    ZMK_MACRO(ai_herdr_tab_next,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp N>;
+    )
+
+    ZMK_MACRO(ai_herdr_tab_prev,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp P>;
+    )
+
+    ZMK_MACRO(ai_herdr_zoom,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp Z>;
     )
 
     ZMK_MACRO(ai_model,
@@ -10783,8 +10859,8 @@ macros {
             bindings = <
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &ai_usage  &ai_claude_background  &kp LC(S)  &kp LA(T)  &ai_claude_btw  &ai_claude_agents  &none  &none  &none  &none  &none  &none
-                &ai_claude_new  &ai_permissions  &ai_claude_effort_down  &ai_claude_effort_up  &ai_model  &kp LC(O)  &none  &none  &none  &none  &none  &none
-                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &none  &none  &none  &none  &none  &none
+                &ai_claude_new  &ai_permissions  &ai_claude_effort_down  &ai_claude_effort_up  &ai_model  &kp LC(O)  &ai_herdr_navigator  &ai_herdr_tab_prev  &ai_herdr_pane_cycle  &ai_herdr_tab_next  &none  &none
+                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &ai_herdr_pane_left  &ai_herdr_pane_down  &ai_herdr_pane_up  &ai_herdr_pane_right  &ai_herdr_zoom  &none
                 &ai_resume  &ai_compact  &ai_diff  &ai_review  &ai_plan  &kp LC(G)  &kp ENTER  &kp LC(J)  &ai_claude_background  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &trans  &kp Y  &kp N  &kp LC(C)  &none  &none  &none  &trans  &none  &none  &none  &none
             >;
