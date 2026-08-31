@@ -23,13 +23,15 @@ Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persist
 
 ### AI control layer (layer 30, `AI_Claude`)
 
-Hold the **right C2R6 thumb** (position 75) and operate the **left hand** to drive
-Claude Code; tapping that key is still a one-shot Right Shift, and releasing
+Hold the **right C2R6 thumb** (position 75): the **left hand** drives Claude Code
+and the **right home block** drives herdr, the terminal multiplexer Claude Code
+runs inside. Tapping that key is still a one-shot Right Shift, and releasing
 returns to base. Ported from
 [dongdongbh/glove80](https://github.com/dongdongbh/glove80).
 
-It's a cross-hand positional hold-tap: the hold resolves only when a left-hand key
-is pressed, so same-hand typing and the shift tap both survive.
+It's a positional hold-tap: the hold resolves on the left hand plus the nine herdr
+positions (28–31, 40–44) rather than the left hand alone, so Right Shift still
+shifts every other right-hand key.
 
 Slash commands are typed directly. Upstream defines `AI_VIM_COMPOSER` to prefix
 them with `ESC` `I` for a Vim-mode composer — left undefined here, since Claude
