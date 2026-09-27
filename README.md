@@ -66,6 +66,14 @@ That's where the Engrammer hold-taps, combos and RGB indicator blocks live. When
 change lands in either, read `config/glove80.keymap` instead — it carries the same
 content as real DTS and diffs properly.
 
+## Where this repo lives
+
+The authoritative copy is WSL `~/Projects/glove80-config` plus GitHub. Any
+OneDrive/VS Code copy is Windows-only, kept fast-forwarded from that source,
+and never edited directly — see the code source-of-truth policy in
+[`Schema/operator-context.md`](https://github.com/kdelacruz94/AI-Brain/blob/main/Schema/operator-context.md)
+([AI-Brain#99](https://github.com/kdelacruz94/AI-Brain/pull/99)).
+
 ## Workflow
 
 1. Edit in the [Layout Editor](https://my.glove80.com).
