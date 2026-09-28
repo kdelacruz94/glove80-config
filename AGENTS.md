@@ -38,6 +38,22 @@ the Layout Editor rejects the whole file on import with `invalid key code`. `Cus
 values (`&kp _C(L)`) are raw devicetree passthrough and keep their parens.
 `scripts/check_layout_json.py` (CI job `layout-json`) fails on the wrong form.
 
+## The layout JSON's `version` field
+
+`layout/*.json` must keep the top-level `"version": 1` the Layout Editor writes.
+It is the first key in the file and the only thing a hand-built JSON is likely to
+miss; without it MoergoLayerViz falls back to stale labels rather than erroring,
+so the loss is silent. Round-trip a hand-edit through the editor (import, export)
+if you are unsure, and keep the file byte-identical to that export -- no trailing
+newline.
+
+## The JSON's encoding aliases are not key differences
+
+The editor writes `&magic` for the keymap's `&magic LAYER_Magic 0`, `&reset` for
+`&sys_reset`, and **numeric layer indices** (`&to 17`) where the keymap uses the
+`LAYER_*` macros. The index is the position in `layer_names`. Compare the two
+files through those aliases; a naive string diff reports ~23 false mismatches.
+
 ## Chords that need a host-side binding
 
 Some keys emit a chord that does nothing until the *host* binds it. Keep this list
