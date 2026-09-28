@@ -111,3 +111,16 @@ firmware is limited to v1.2.4, which is one-way and cannot track layers.
 
 `zmk-raw-hid` is pulled from **ovandongen's fork**, not zzeneg upstream, for a
 static-HID-report-buffer fix that upstream lacks.
+
+### Point the viz at the repo file, not a Downloads export
+
+MoergoLayerViz reads a layout JSON for its key labels. Point it at **this repo's**
+copy, so it never drifts from what CI flashes:
+
+- raw URL — `https://raw.githubusercontent.com/kdelacruz94/glove80-config/main/layout/V52-Everforest-QWERTY.json`
+- or the local path — `layout/V52-Everforest-QWERTY.json`
+
+After a keymap change, refresh it by pushing the `config/glove80.keymap` +
+`layout/*.json` pair (they change in the same commit — see `CLAUDE.md`) and
+reloading the viz. A one-off editor export sitting in `Downloads` is not a source:
+it goes stale the moment the next binding lands.
