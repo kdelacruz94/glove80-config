@@ -30,6 +30,14 @@ views of one layout. The JSON round-trips through
 `json.dumps(d, indent=2, ensure_ascii=False)` with no diff churn, so a scripted
 single-index edit stays a single-hunk diff.
 
+## Modifier chords: two different encodings
+
+The keymap and the layout JSON do NOT share the chord syntax. `config/glove80.keymap`
+uses ZMK's string form (`&kp LG(LS(S))`); the JSON must use MoErgo's nested params, or
+the Layout Editor rejects the whole file on import with `invalid key code`. `Custom`
+values (`&kp _C(L)`) are raw devicetree passthrough and keep their parens.
+`scripts/check_layout_json.py` (CI job `layout-json`) fails on the wrong form.
+
 ## Chords that need a host-side binding
 
 Some keys emit a chord that does nothing until the *host* binds it. Keep this list
