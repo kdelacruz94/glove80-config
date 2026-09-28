@@ -75,7 +75,17 @@
         "value": "&kp",
         "params": [
           {
-            "value": "LG(LS(S))"
+            "value": "LG",
+            "params": [
+              {
+                "value": "LS",
+                "params": [
+                  {
+                    "value": "S"
+                  }
+                ]
+              }
+            ]
           }
         ],
         "decoration": {
@@ -10766,7 +10776,22 @@
         "value": "&kp",
         "params": [
           {
-            "value": "LC(LA(LG(F12)))"
+            "value": "LC",
+            "params": [
+              {
+                "value": "LA",
+                "params": [
+                  {
+                    "value": "LG",
+                    "params": [
+                      {
+                        "value": "F12"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ],
         "decoration": {
