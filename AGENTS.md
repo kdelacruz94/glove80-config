@@ -30,6 +30,20 @@ views of one layout. The JSON round-trips through
 `json.dumps(d, indent=2, ensure_ascii=False)` with no diff churn, so a scripted
 single-index edit stays a single-hunk diff.
 
+## Chords that need a host-side binding
+
+Some keys emit a chord that does nothing until the *host* binds it. Keep this list
+current when adding one, because the keymap alone cannot show the dependency:
+
+- `F13` (base pos 22, AI_Claude pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
+- `LG(LS(S))` (base pos 0) -- native on Windows; on CachyOS/Hyprland the same chord
+  must be bound to a `grim`/`slurp` or `hyprshot` command.
+- `LC(LA(LG(F12)))` (System layer pos 4) -- monitor DDC input toggle; bound per host,
+  see the PR that introduced it for the ControlMyMonitor setup.
+- `&ai_herdr_*` macros -- herdr's prefix is `ctrl+b`; the macro sends prefix and action
+  as two separate taps, never chorded. Actions come from `herdr/config.linux.toml` in
+  `~/Projects/terminal-config`, cross-checked against `herdr --default-config`.
+
 There is no local build. CI (`.github/workflows/build.yml`) is the only acceptance
 check -- see the two traps in `README.md` before touching `config/west.yml` or the
 workflow.
