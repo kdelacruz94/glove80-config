@@ -188,7 +188,17 @@
         "value": "&none"
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "F13"
+          }
+        ],
+        "decoration": {
+          "icon": "fa-microphone",
+          "background": "#a7c080ff",
+          "description": "Push-to-talk dictation (F13): hold to record, release to transcribe."
+        }
       },
       {
         "value": "&kp",
