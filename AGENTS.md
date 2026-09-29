@@ -60,6 +60,8 @@ Some keys emit a chord that does nothing until the *host* binds it. Keep this li
 current when adding one, because the keymap alone cannot show the dependency:
 
 - `F13` (base pos 22, AI_Claude pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
+- `F14` (base pos 10, Function pos 45) -- host mute binding on Windows and
+  CachyOS/Hyprland; see the base-layer shortcuts section in `README.md`.
 - `LG(LS(S))` (base pos 0) -- native on Windows; on CachyOS/Hyprland the same chord
   must be bound to a `grim`/`slurp` or `hyprshot` command.
 - `LC(LA(LG(F12)))` (System layer pos 4) -- monitor DDC input toggle; bound per host,
