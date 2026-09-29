@@ -134,16 +134,66 @@
         }
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "LG",
+            "params": [
+              {
+                "value": "LS",
+                "params": [
+                  {
+                    "value": "F"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "LG",
+            "params": [
+              {
+                "value": "LA",
+                "params": [
+                  {
+                    "value": "RBKT"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "LG",
+            "params": [
+              {
+                "value": "LC",
+                "params": [
+                  {
+                    "value": "RIGHT"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "F14"
+          }
+        ]
       },
       {
         "value": "&kp",

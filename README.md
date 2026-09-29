@@ -44,6 +44,30 @@ Two deliberate omissions:
 - **QWERTY only.** Maple also has a free `&kp RSHFT` at 75, but it's the
   MapleStory layer — the trigger would sit under a thumb mid-game for no gain.
 
+### Base-layer shortcuts (positions 7–10)
+
+| Position | Key | Output |
+|---|---|---|
+| 7 | Right C4R1 | Win+Shift+F |
+| 8 | Right C5R1 | Win+Alt+] (`oem_6` on Windows) |
+| 9 | Right C6R1 | Win+Ctrl+Right |
+| 10 | Left C6R2 | F14 |
+
+**F14 mutes through a host binding.** On Windows, use [PowerToys Keyboard
+Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager)
+to remap the `F14` key to `Volume Mute`; keep PowerToys running for the remap to
+work. On CachyOS with Hyprland's `hyprland.conf` bind syntax, add:
+
+```ini
+bindl = , F14, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+```
+
+The `l` flag lets the [Hyprland bind](https://wiki.hypr.land/0.52.0/Configuring/Binds/)
+work while the screen is locked; [WirePlumber's `wpctl`](https://pipewire.pages.freedesktop.org/wireplumber/man/wpctl.html)
+toggles the default output sink. These bindings belong in the host configs,
+outside this repo. They also make the existing F14 on the Function layer
+(position 45) mute.
+
 ## Files
 
 | Path | What it is |
