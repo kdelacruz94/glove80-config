@@ -44,6 +44,16 @@ Two deliberate omissions:
 - **QWERTY only.** Maple also has a free `&kp RSHFT` at 75, but it's the
   MapleStory layer — the trigger would sit under a thumb mid-game for no gain.
 
+### Base-layer first row (positions 0–4)
+
+| Position | Key | Output | Needs a host binding |
+|---|---|---|---|
+| 0 | Left C6R1 | Win+Ctrl+Alt+F11 | yes — monitor input → DisplayPort |
+| 1 | Left C5R1 | Win+Ctrl+Alt+F12 | yes — monitor input → USB-C |
+| 2 | Left C4R1 | `&none` (reserved for more DDC controls) | — |
+| 3 | Left C3R1 | `&none` (reserved for more DDC controls) | — |
+| 4 | Left C2R1 | Win+Shift+S | native on Windows; on CachyOS/Hyprland bind the chord to `grim`/`slurp` or `hyprshot` |
+
 ### Base-layer shortcuts (positions 7–10)
 
 | Position | Key | Output |
@@ -51,12 +61,13 @@ Two deliberate omissions:
 | 7 | Right C4R1 | Win+Shift+F |
 | 8 | Right C5R1 | Win+Alt+] (`oem_6` on Windows) |
 | 9 | Right C6R1 | Win+Ctrl+Right |
-| 10 | Left C6R2 | F14 |
+| 10 | Left C6R2 | Ctrl+B — the herdr prefix, as a plain tap |
 
-**F14 mutes through a host binding.** On Windows, use [PowerToys Keyboard
+Position 10 is just the prefix: tap it, then press the herdr action key. It needs no
+host binding. Mute lives on the **Function** layer (position 45, `F14`) and still
+needs one — on Windows remap `F14` to `Volume Mute` with [PowerToys Keyboard
 Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager)
-to remap the `F14` key to `Volume Mute`; keep PowerToys running for the remap to
-work. On CachyOS, add this Lua bind to
+(PowerToys must stay running); on CachyOS add this to
 `terminal-config/cachyos/desktop/hypr/config/keybinds.lua`:
 
 ```lua
@@ -64,9 +75,46 @@ hl.bind("F14", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 ```
 
 [WirePlumber's `wpctl`](https://pipewire.pages.freedesktop.org/wireplumber/man/wpctl.html)
-toggles the default output sink. These bindings belong in the host configs,
-outside this repo. They also make the existing F14 on the Function layer
-(position 45) mute.
+toggles the default output sink. These bindings belong in the host configs, outside
+this repo.
+
+### Monitor input switching — host setup
+
+Positions 0 and 1 are **absolute**, not a toggle: each one sets the monitor to one
+fixed input, so the same key does the same thing from either machine. Set both up on
+**each** machine that drives the monitor (work desktop and work laptop).
+
+1. Put [ControlMyMonitor](https://www.nirsoft.net/utils/control_my_monitor.html)
+   (portable, no installer) in `%LOCALAPPDATA%\ControlMyMonitor\ControlMyMonitor.exe`.
+2. Read the input values **once**, with the monitor on each input in turn:
+   `ControlMyMonitor.exe /GetValue "<monitor-id>" 60` — VCP code `0x60` is
+   *Input Select*. Note the number for DisplayPort and the number for USB-C; they are
+   monitor-specific (commonly `15` for DP and `27` for USB-C, but do not assume).
+   `ControlMyMonitor.exe /smonitors` lists monitor IDs.
+3. Create two `.cmd` scripts next to the exe, substituting the values from step 2:
+
+   ```bat
+   rem monitor-dp.cmd
+   "%LOCALAPPDATA%\ControlMyMonitor\ControlMyMonitor.exe" /SetValue Primary 60 15
+   ```
+
+   ```bat
+   rem monitor-usbc.cmd
+   "%LOCALAPPDATA%\ControlMyMonitor\ControlMyMonitor.exe" /SetValue Primary 60 27
+   ```
+
+4. In **PowerToys Keyboard Manager → Remap a shortcut**, add two entries of type
+   *Run program*:
+
+   | Shortcut | Runs |
+   |---|---|
+   | Win+Ctrl+Alt+F11 | `monitor-dp.cmd` |
+   | Win+Ctrl+Alt+F12 | `monitor-usbc.cmd` |
+
+   PowerToys must stay running for these to work.
+
+This replaces the round-2 single toggle key (Win+Ctrl+Alt+F12 on the System layer),
+which asked the host script to guess which input to move to.
 
 ## Files
 

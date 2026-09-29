@@ -60,12 +60,13 @@ Some keys emit a chord that does nothing until the *host* binds it. Keep this li
 current when adding one, because the keymap alone cannot show the dependency:
 
 - `F13` (base pos 22, AI_Claude pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
-- `F14` (base pos 10, Function pos 45) -- host mute binding on Windows and
-  CachyOS/Hyprland; see the base-layer shortcuts section in `README.md`.
-- `LG(LS(S))` (base pos 0) -- native on Windows; on CachyOS/Hyprland the same chord
+- `F14` (Function pos 45 only) -- host mute binding on Windows and CachyOS/Hyprland;
+  see the base-layer shortcuts section in `README.md`.
+- `LG(LS(S))` (base pos 4) -- native on Windows; on CachyOS/Hyprland the same chord
   must be bound to a `grim`/`slurp` or `hyprshot` command.
-- `LC(LA(LG(F12)))` (System layer pos 4) -- monitor DDC input toggle; bound per host,
-  see the PR that introduced it for the ControlMyMonitor setup.
+- `LC(LA(LG(F11)))` / `LC(LA(LG(F12)))` (base pos 0 / 1) -- absolute monitor input
+  select (DisplayPort / USB-C) via ControlMyMonitor VCP `0x60`; per-machine setup in
+  `README.md`. Replaced the round-2 single toggle key.
 - `&ai_herdr_*` macros -- herdr's prefix is `ctrl+b`; the macro sends prefix and action
   as two separate taps, never chorded. Actions come from `herdr/config.linux.toml` in
   `~/Projects/terminal-config`, cross-checked against `herdr --default-config`.
