@@ -56,14 +56,14 @@ Two deliberate omissions:
 **F14 mutes through a host binding.** On Windows, use [PowerToys Keyboard
 Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager)
 to remap the `F14` key to `Volume Mute`; keep PowerToys running for the remap to
-work. On CachyOS with Hyprland's `hyprland.conf` bind syntax, add:
+work. On CachyOS, add this Lua bind to
+`terminal-config/cachyos/desktop/hypr/config/keybinds.lua`:
 
-```ini
-bindl = , F14, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+```lua
+hl.bind("F14", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
 ```
 
-The `l` flag lets the [Hyprland bind](https://wiki.hypr.land/0.52.0/Configuring/Binds/)
-work while the screen is locked; [WirePlumber's `wpctl`](https://pipewire.pages.freedesktop.org/wireplumber/man/wpctl.html)
+[WirePlumber's `wpctl`](https://pipewire.pages.freedesktop.org/wireplumber/man/wpctl.html)
 toggles the default output sink. These bindings belong in the host configs,
 outside this repo. They also make the existing F14 on the Function layer
 (position 45) mute.
