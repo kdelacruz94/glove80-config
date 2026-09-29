@@ -76,6 +76,68 @@
         "value": "&kp",
         "params": [
           {
+            "value": "LC",
+            "params": [
+              {
+                "value": "LA",
+                "params": [
+                  {
+                    "value": "LG",
+                    "params": [
+                      {
+                        "value": "F11"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "decoration": {
+          "icon": "fa-desktop",
+          "background": "#7fbbb3ff",
+          "description": "Monitor input: switch to DisplayPort (work desktop). Win+Ctrl+Alt+F11, bound on each host to a ControlMyMonitor script setting VCP 0x60 to the DisplayPort value."
+        }
+      },
+      {
+        "value": "&kp",
+        "params": [
+          {
+            "value": "LC",
+            "params": [
+              {
+                "value": "LA",
+                "params": [
+                  {
+                    "value": "LG",
+                    "params": [
+                      {
+                        "value": "F12"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "decoration": {
+          "icon": "fa-laptop",
+          "background": "#7fbbb3ff",
+          "description": "Monitor input: switch to USB-C (work laptop). Win+Ctrl+Alt+F12, bound on each host to a ControlMyMonitor script setting VCP 0x60 to the USB-C value."
+        }
+      },
+      {
+        "value": "&none"
+      },
+      {
+        "value": "&none"
+      },
+      {
+        "value": "&kp",
+        "params": [
+          {
             "value": "LG",
             "params": [
               {
@@ -94,18 +156,6 @@
           "background": "#7fbbb3ff",
           "description": "Screenshot: Win+Shift+S (Windows Snipping Tool). On CachyOS/Hyprland the same chord must be bound to a grim/slurp or hyprshot command."
         }
-      },
-      {
-        "value": "&none"
-      },
-      {
-        "value": "&none"
-      },
-      {
-        "value": "&none"
-      },
-      {
-        "value": "&none"
       },
       {
         "value": "Custom",
@@ -191,9 +241,19 @@
         "value": "&kp",
         "params": [
           {
-            "value": "F14"
+            "value": "LC",
+            "params": [
+              {
+                "value": "B"
+              }
+            ]
           }
-        ]
+        ],
+        "decoration": {
+          "icon": "fa-terminal",
+          "background": "#83c092ff",
+          "description": "herdr prefix: Ctrl+B. Tap, then the action key."
+        }
       },
       {
         "value": "&kp",
@@ -10824,32 +10884,7 @@
         "value": "&none"
       },
       {
-        "value": "&kp",
-        "params": [
-          {
-            "value": "LC",
-            "params": [
-              {
-                "value": "LA",
-                "params": [
-                  {
-                    "value": "LG",
-                    "params": [
-                      {
-                        "value": "F12"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "decoration": {
-          "icon": "fa-desktop",
-          "background": "#7fbbb3ff",
-          "description": "Monitor input switch: Win+Ctrl+Alt+F12, bound on both hosts to a DDC toggle between DisplayPort and USB-C."
-        }
+        "value": "&none"
       },
       {
         "value": "&none"
