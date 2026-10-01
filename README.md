@@ -21,28 +21,31 @@ Excel_Code, Excel_TBD) for Office/dev contexts, and a **Gaming** family (Gaming/
 Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persistent
 `&to`, using the same mechanism Engrammer uses for base-alphabet switching.
 
-### AI control layer (layer 30, `AI_Claude`)
+### Terminal layer (layer 30, `Terminal`)
 
-Hold the **right C2R6 thumb** (position 75): the **left hand** drives Claude Code
-and the **right home block** drives herdr, the terminal multiplexer Claude Code
-runs inside. Tapping that key is still a one-shot Right Shift, and releasing
-returns to base. Ported from
-[dongdongbh/glove80](https://github.com/dongdongbh/glove80).
+Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr actions
+(`ctrl+b` prefix, then the key) and the **right hand** sends the terminal emulator
+chords that WezTerm and kitty share. Tapping that key is still a one-shot Right
+Shift, and releasing returns to base. The chord contract lives in
+[terminal-config `docs/glove80-terminal-layer-chords.md`](https://github.com/kdelacruz94/terminal-config/blob/main/docs/glove80-terminal-layer-chords.md);
+this layer only maps keys to it. Replaces the round-2 `AI_Claude` layer (Claude Code
+slash-command keys removed).
 
-It's a positional hold-tap: the hold resolves on the left hand plus the nine herdr
-positions (28–31, 41–45) rather than the left hand alone, so Right Shift still
-shifts every other right-hand key.
+| Position | Key | Sends |
+|---|---|---|
+| 11-15 | Left C5-C1 R2 | herdr new tab `c` · close tab `shift+x` · split side `v` · split below `minus` · pane zoom `z` |
+| 24-27 | Left C4-C1 R3 | herdr focus pane left/down/up/right `h` `j` `k` `l` |
+| 35-38 | Left C5-C2 R4 | herdr previous/next workspace `shift+h` `shift+l` · previous/next tab `p` `n` |
+| 47-51 | Left C5-C1 R5 | herdr workspace picker `w` · goto `g` · last pane `a` · next/prev agent `shift+j` `shift+k` |
+| 28-32 | Right C1-C5 R3 | copy `ctrl+shift+c` · paste `ctrl+shift+v` · scrollback search `ctrl+shift+f` · clear `ctrl+shift+k` · new window `ctrl+shift+n` |
+| 40-44 | Right C1-C5 R4 | page up/down `ctrl+shift+page_up/down` · font bigger/smaller/reset `ctrl+=` `ctrl+-` `ctrl+0` |
+| 4 | Left C2R1 | `F13` dictation, unchanged |
 
-Slash commands are typed directly. Upstream defines `AI_VIM_COMPOSER` to prefix
-them with `ESC` `I` for a Vim-mode composer — left undefined here, since Claude
-Code's composer isn't Vim-mode by default. Define it if you switch.
+Left C4R1 / C3R1 (base positions 2, 3) stay `&none`, reserved for PIP/PBP. System-layer
+app keys are deferred.
 
-Two deliberate omissions:
-
-- **Codex half not installed.** It wants position 68, which here is
-  `&stumb LAYER_Excel LSFT`, so it would displace the Excel thumb.
-- **QWERTY only.** Maple also has a free `&kp RSHFT` at 75, but it's the
-  MapleStory layer — the trigger would sit under a thumb mid-game for no gain.
+The hold resolves on the left hand plus the ten emulator positions (28-32, 40-44), so
+Right Shift still shifts every other right-hand key.
 
 ### Base-layer first row (positions 0–4)
 
@@ -50,14 +53,16 @@ Two deliberate omissions:
 |---|---|---|---|
 | 0 | Left C6R1 | Win+Ctrl+Alt+F11 | yes — monitor input → DisplayPort |
 | 1 | Left C5R1 | Win+Ctrl+Alt+F12 | yes — monitor input → USB-C |
-| 2 | Left C4R1 | `&none` (reserved for more DDC controls) | — |
-| 3 | Left C3R1 | `&none` (reserved for more DDC controls) | — |
+| 2 | Left C4R1 | `&none` (reserved for PIP/PBP) | — |
+| 3 | Left C3R1 | `&none` (reserved for PIP/PBP) | — |
 | 4 | Left C2R1 | Win+Shift+S | native on Windows; on CachyOS/Hyprland bind the chord to `grim`/`slurp` or `hyprshot` |
 
-### Base-layer shortcuts (positions 7–10)
+### Base-layer shortcuts (positions 5–10)
 
 | Position | Key | Output |
 |---|---|---|
+| 5 | Right C2R1 | herdr last pane (Ctrl+B, `a`) |
+| 6 | Right C3R1 | Win+Ctrl+Left — previous workspace |
 | 7 | Right C4R1 | Win+Shift+F |
 | 8 | Right C5R1 | Win+Alt+] (`oem_6` on Windows) |
 | 9 | Right C6R1 | Win+Ctrl+Right |

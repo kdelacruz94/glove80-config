@@ -59,7 +59,7 @@ files through those aliases; a naive string diff reports ~23 false mismatches.
 Some keys emit a chord that does nothing until the *host* binds it. Keep this list
 current when adding one, because the keymap alone cannot show the dependency:
 
-- `F13` (base pos 22, AI_Claude pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
+- `F13` (base pos 22, Terminal pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
 - `F14` (Function pos 45 only) -- host mute binding on Windows and CachyOS/Hyprland;
   see the base-layer shortcuts section in `README.md`.
 - `LG(LS(S))` (base pos 4) -- native on Windows; on CachyOS/Hyprland the same chord
@@ -67,9 +67,11 @@ current when adding one, because the keymap alone cannot show the dependency:
 - `LC(LA(LG(F11)))` / `LC(LA(LG(F12)))` (base pos 0 / 1) -- absolute monitor input
   select (DisplayPort / USB-C) via ControlMyMonitor VCP `0x60`; per-machine setup in
   `README.md`. Replaced the round-2 single toggle key.
-- `&ai_herdr_*` macros -- herdr's prefix is `ctrl+b`; the macro sends prefix and action
-  as two separate taps, never chorded. Actions come from `herdr/config.linux.toml` in
-  `~/Projects/terminal-config`, cross-checked against `herdr --default-config`.
+- `&term_herdr_*` macros -- herdr's prefix is `ctrl+b`; the macro sends prefix and action
+  as two separate taps, never chorded. Actions come from `docs/glove80-terminal-layer-chords.md`
+  in `~/Projects/terminal-config` (the chord contract), which also lists the emulator chords
+  (WezTerm/kitty) the Terminal layer's right hand sends: `ctrl+shift+c/v/f/k/n/page_up/page_down`
+  and `ctrl+=` / `ctrl+-` / `ctrl+0` for text zoom. Change a chord there first, then re-map the key.
 
 There is no local build. CI (`.github/workflows/build.yml`) is the only acceptance
 check -- see the two traps in `README.md` before touching `config/west.yml` or the
