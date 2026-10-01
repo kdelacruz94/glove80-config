@@ -91,7 +91,7 @@
 #define LAYER_Excel_TBD 27
 #define LAYER_LoL 28
 #define LAYER_Gaming_TBD 29
-#define LAYER_AI_Claude 30
+#define LAYER_Terminal 30
 
 /* To deal with the situation where there is no Lower layer, to keep &lower happy */
 #ifndef LAYER_Lower
@@ -10130,66 +10130,41 @@ macros {
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// AI control layer -- Claude Code
+// Terminal layer
 //
-// Ported from https://github.com/dongdongbh/glove80 (docs/ai-control-layers.md).
-// Only the Claude half is installed. The Codex half wants position 68, which
-// here is `&stumb LAYER_Excel LSFT`, so it is deliberately left out.
+// Hold the right C2R6 thumb (position 75). The LEFT hand sends herdr actions
+// (ctrl+b prefix, then the action key); the RIGHT hand sends the terminal
+// emulator chords that WezTerm and kitty share. Tapping the thumb is still a
+// one-shot Right Shift, and releasing returns straight to the base layer.
 //
-// Hold the right C2R6 thumb (position 75) and operate the LEFT hand to drive
-// Claude Code, or the RIGHT home block to drive herdr, the terminal multiplexer
-// Claude Code runs inside. Tapping the thumb is still a one-shot Right Shift,
-// exactly as before -- the hold resolves only on the left hand plus the nine
-// herdr keys, so same-hand typing and the shift tap both survive. Releasing
-// returns straight to the base layer.
+// The chords are defined by terminal-config's
+// docs/glove80-terminal-layer-chords.md -- change a chord there first.
 //
 // Position 75 was free: it held `&stumb LAYER_World RSFT` in stock Engrammer
 // and became a plain `&kp RSHFT` when the World layer was removed.
 //
-// Every key emits a native shortcut or types a built-in slash command, so no
-// host bridge, terminal binding, or Claude keybinding file is required.
-//
 //////////////////////////////////////////////////////////////////////////////
 
 //
-// Define AI_VIM_COMPOSER to prefix slash commands with ESC then I, which
-// normalises a Vim-mode composer into insert mode first. Left undefined here:
-// Claude Code's composer is not Vim-mode by default, so commands type directly.
+// The ten right-hand positions the emulator chords occupy: Y U I O P on the E
+// row and H J K L SEMI on the home row. Only these are added to the trigger's
+// hold-trigger-key-positions -- every other right-hand key still resolves the
+// trigger as a tap, so Right Shift keeps shifting them.
 //
-#ifdef AI_VIM_COMPOSER
-#define AI_COMPOSER_PREFIX &kp ESC &kp I
-#else
-#define AI_COMPOSER_PREFIX
-#endif
-
-//
-// The nine right-hand positions the herdr half occupies: J K L SEMI (vim pane
-// focus, shifted one column right of the letters so the hand keeps its home
-// position) and SQT beside them, plus Y U I O on the row above. Only these are
-// added to the trigger's hold-trigger-key-positions -- every other right-hand
-// key still resolves the trigger as a tap, so Right Shift keeps shifting them.
-//
-#define AI_RIGHT_HAND_KEYS 28 29 30 31 41 42 43 44 45
+#define TERM_RIGHT_HAND_KEYS 28 29 30 31 32 40 41 42 43 44
 
 / {
   behaviors {
     //
     // Positional hold-tap. `hold-trigger-key-positions` lists the left hand
-    // plus the nine herdr keys and nothing else, so the trigger finger stays
+    // plus the ten emulator keys and nothing else, so the trigger finger stays
     // out of the rest of its own keywell; `hold-trigger-on-release` defers the
     // decision so home-row mods still resolve first.
     //
-    // Adding AI_RIGHT_HAND_KEYS is what makes the herdr half reachable at all:
-    // with the list left-hand-only, any right-hand key pressed during the hold
-    // resolved the trigger as a tap, so those bindings could never fire. The
-    // cost is bounded to those nine keys -- holding this thumb and pressing one
-    // of them now navigates herdr instead of shifting the letter, which is the
-    // same-hand shift that touch typing already sends to the left shift.
-    //
-    ai_right_trigger: ai_right_cross_hand_layer_shift {
+    term_right_trigger: term_right_cross_hand_layer_shift {
       compatible = "zmk,behavior-hold-tap";
       flavor = THUMB_HOLDING_TYPE;
-      hold-trigger-key-positions = <LEFT_HAND_KEYS AI_RIGHT_HAND_KEYS>;
+      hold-trigger-key-positions = <LEFT_HAND_KEYS TERM_RIGHT_HAND_KEYS>;
       hold-trigger-on-release;
       tapping-term-ms = <THUMB_HOLDING_TIME>;
       quick-tap-ms = <THUMB_REPEAT_DECAY>; // enable repeat
@@ -10199,170 +10174,116 @@ macros {
   };
 
   macros {
-    ZMK_MACRO(ai_claude_agents,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp A &kp G &kp E &kp N &kp T &kp S &kp ENTER>;
-    )
-
-    ZMK_MACRO(ai_claude_background,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(X) &kp LC(B)>;
-    )
-
-    ZMK_MACRO(ai_claude_btw,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp B &kp T &kp W &kp ENTER>;
-    )
-
-    ZMK_MACRO(ai_claude_copy,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp O &kp P &kp Y &kp ENTER>;
-    )
-
-    ZMK_MACRO(ai_claude_effort_down,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LA(P) &kp LEFT>;
-    )
-
-    ZMK_MACRO(ai_claude_effort_up,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LA(P) &kp RIGHT>;
-    )
-
-    ZMK_MACRO(ai_claude_new,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp L &kp E &kp A &kp R &kp ENTER>;
-    )
-
-    ZMK_MACRO(ai_compact,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp C &kp O &kp M &kp P &kp A &kp C &kp T &kp ENTER>;
-    )
-
-    ZMK_MACRO(ai_diff,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp D &kp I &kp F &kp F &kp ENTER>;
-    )
-
     //
-    // herdr navigation. The prefix is ctrl+b, sent and released before the
-    // action key -- never chorded with it -- so each macro is two taps.
+    // herdr actions. The prefix is ctrl+b, sent and released before the action
+    // key -- never chorded with it -- so each macro is two taps.
     //
-    ZMK_MACRO(ai_herdr_navigator,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LA(T)>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_cycle,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp TAB>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_cycle_prev,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(TAB)>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_down,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp J>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_left,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp H>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_right,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp L>;
-    )
-
-    ZMK_MACRO(ai_herdr_pane_up,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp K>;
-    )
-
-    ZMK_MACRO(ai_herdr_tab_next,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp N>;
-    )
-
-    ZMK_MACRO(ai_herdr_tab_prev,
+    ZMK_MACRO(term_herdr_tab_prev,
       wait-ms = <15>;
       tap-ms = <15>;
       bindings = <&macro_tap &kp LC(B) &kp P>;
     )
 
-    ZMK_MACRO(ai_herdr_workspace,
+    ZMK_MACRO(term_herdr_tab_next,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp W>;
+      bindings = <&macro_tap &kp LC(B) &kp N>;
     )
 
-    ZMK_MACRO(ai_herdr_zoom,
+    ZMK_MACRO(term_herdr_workspace_prev,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp LS(H)>;
+    )
+
+    ZMK_MACRO(term_herdr_workspace_next,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp LS(L)>;
+    )
+
+    ZMK_MACRO(term_herdr_tab_new,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp C>;
+    )
+
+    ZMK_MACRO(term_herdr_tab_close,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp LS(X)>;
+    )
+
+    ZMK_MACRO(term_herdr_split_side,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp V>;
+    )
+
+    ZMK_MACRO(term_herdr_split_below,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp MINUS>;
+    )
+
+    ZMK_MACRO(term_herdr_zoom,
       wait-ms = <15>;
       tap-ms = <15>;
       bindings = <&macro_tap &kp LC(B) &kp Z>;
     )
 
-    ZMK_MACRO(ai_model,
+    ZMK_MACRO(term_herdr_workspace_picker,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp M &kp O &kp D &kp E &kp L &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp W>;
     )
 
-    ZMK_MACRO(ai_permissions,
+    ZMK_MACRO(term_herdr_goto,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp P &kp E &kp R &kp M &kp I &kp S &kp S &kp I &kp O &kp N &kp S &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp G>;
     )
 
-    ZMK_MACRO(ai_plan,
+    ZMK_MACRO(term_herdr_last_pane,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp P &kp L &kp A &kp N &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp A>;
     )
 
-    ZMK_MACRO(ai_resume,
+    ZMK_MACRO(term_herdr_agent_next,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp R &kp E &kp S &kp U &kp M &kp E &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp LS(J)>;
     )
 
-    ZMK_MACRO(ai_review,
+    ZMK_MACRO(term_herdr_agent_prev,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp R &kp E &kp V &kp I &kp E &kp W &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp LS(K)>;
     )
 
-    ZMK_MACRO(ai_status,
+    ZMK_MACRO(term_herdr_pane_left,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp S &kp T &kp A &kp T &kp U &kp S &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp H>;
     )
 
-    ZMK_MACRO(ai_usage,
+    ZMK_MACRO(term_herdr_pane_down,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap AI_COMPOSER_PREFIX &kp FSLH &kp U &kp S &kp A &kp G &kp E &kp ENTER>;
+      bindings = <&macro_tap &kp LC(B) &kp J>;
+    )
+
+    ZMK_MACRO(term_herdr_pane_up,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp K>;
+    )
+
+    ZMK_MACRO(term_herdr_pane_right,
+      wait-ms = <15>;
+      tap-ms = <15>;
+      bindings = <&macro_tap &kp LC(B) &kp L>;
     )
   };
 };
@@ -10539,12 +10460,12 @@ macros {
 
         layer_QWERTY {
             bindings = <
-  &kp LC(LA(LG(F11)))           &kp LC(LA(LG(F12)))                         &none                         &none                 &kp LG(LS(S))                                                                                                                                                   &ai_herdr_pane_cycle     &ai_herdr_pane_cycle_prev  &kp LG(LS(F))  &kp LG(LA(RBKT))  &kp LG(LC(RIGHT))
-                     &kp LC(B)                        &kp N1                        &kp N2                        &kp N3                        &kp N4  &kp N5                                                                                                                                           &kp N6                         &kp N7                         &kp N8                         &kp N9                            &kp N0          &ai_herdr_workspace
+  &kp LC(LA(LG(F11)))           &kp LC(LA(LG(F12)))                         &none                         &none                 &kp LG(LS(S))                                                                                                                                                   &term_herdr_last_pane     &kp LG(LC(LEFT))  &kp LG(LS(F))  &kp LG(LA(RBKT))  &kp LG(LC(RIGHT))
+                     &kp LC(B)                        &kp N1                        &kp N2                        &kp N3                        &kp N4  &kp N5                                                                                                                                           &kp N6                         &kp N7                         &kp N8                         &kp N9                            &kp N0          &term_herdr_workspace_picker
                       &kp F13                         &kp Q                         &kp W                         &kp E                         &kp R   &kp T                                                                                                                                            &kp Y                          &kp U                          &kp I                          &kp O                             &kp P                     &kp MINUS
                     &kp EQUAL  &LeftPinky (A, LAYER_QWERTY)  &LeftRingy (S, LAYER_QWERTY)  &LeftMiddy (D, LAYER_QWERTY)  &LeftIndex (F, LAYER_QWERTY)   &kp G                                                                                                                                            &kp H  &RightIndex (J, LAYER_QWERTY)  &RightMiddy (K, LAYER_QWERTY)  &RightRingy (L, LAYER_QWERTY)  &RightPinky (SEMI, LAYER_QWERTY)                       &kp SQT
  &sticky_key_modtap LSFT LSFT                         &kp Z                         &kp X                         &kp C                         &kp V   &kp B      &thumb LAYER_Function ESC             &mo LAYER_Lower  &kp PG_UP    &thums_up  &thumb LAYER_Lower INSERT  &thumb LAYER_System ENTER   &kp N                          &kp M                      &kp COMMA                        &kp DOT                          &kp FSLH  &sticky_key_modtap RSFT RSFT
-         &magic LAYER_Magic 0                      &kp BSLH                  &parang_left                 &parang_right       &stumb LAYER_Excel LSFT          &thumb LAYER_Cursor BACKSPACE  &thumb LAYER_Number DELETE  &kp PG_DN  &thums_down     &thumb LAYER_Mouse TAB  &space LAYER_Symbol SPACE      &ai_right_trigger LAYER_AI_Claude RSFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
+         &magic LAYER_Magic 0                      &kp BSLH                  &parang_left                 &parang_right       &stumb LAYER_Excel LSFT          &thumb LAYER_Cursor BACKSPACE  &thumb LAYER_Number DELETE  &kp PG_DN  &thums_down     &thumb LAYER_Mouse TAB  &space LAYER_Symbol SPACE      &term_right_trigger LAYER_Terminal RSFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
             >;
         };
 
@@ -10867,14 +10788,14 @@ macros {
             >;
         };
 
-        layer_AI_Claude {
+        layer_Terminal {
             bindings = <
                 &none  &none  &none  &none  &kp F13  &none  &none  &none  &none  &none
-                &ai_usage  &ai_claude_background  &kp LC(S)  &kp LA(T)  &ai_claude_btw  &ai_claude_agents  &none  &none  &none  &none  &none  &none
-                &ai_claude_new  &ai_permissions  &ai_claude_effort_down  &ai_claude_effort_up  &ai_model  &kp LC(O)  &ai_herdr_navigator  &ai_herdr_tab_prev  &ai_herdr_pane_cycle  &ai_herdr_tab_next  &ai_herdr_pane_cycle_prev  &ai_herdr_workspace
-                &ai_status  &kp N  &kp UP  &kp DOWN  &kp Y  &ai_claude_copy  &none  &ai_herdr_pane_left  &ai_herdr_pane_down  &ai_herdr_pane_up  &ai_herdr_pane_right  &ai_herdr_zoom
-                &ai_resume  &ai_compact  &ai_diff  &ai_review  &ai_plan  &kp LC(G)  &kp ENTER  &kp LC(J)  &ai_claude_background  &none  &none  &none  &none  &none  &none  &none  &none  &none
-                &none  &none  &none  &none  &trans  &kp Y  &kp N  &kp LC(C)  &none  &none  &none  &trans  &none  &none  &none  &none
+                &none  &term_herdr_tab_new  &term_herdr_tab_close  &term_herdr_split_side  &term_herdr_split_below  &term_herdr_zoom  &none  &none  &none  &none  &none  &none
+                &none  &none  &term_herdr_pane_left  &term_herdr_pane_down  &term_herdr_pane_up  &term_herdr_pane_right  &kp LC(LS(C))  &kp LC(LS(V))  &kp LC(LS(F))  &kp LC(LS(K))  &kp LC(LS(N))  &none
+                &none  &term_herdr_workspace_prev  &term_herdr_workspace_next  &term_herdr_tab_prev  &term_herdr_tab_next  &none  &kp LC(LS(PG_UP))  &kp LC(LS(PG_DN))  &kp LC(EQUAL)  &kp LC(MINUS)  &kp LC(N0)  &none
+                &none  &term_herdr_workspace_picker  &term_herdr_goto  &term_herdr_last_pane  &term_herdr_agent_next  &term_herdr_agent_prev  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &trans  &none  &none  &none  &none  &none  &none  &trans  &none  &none  &none  &none
             >;
         };
 
