@@ -30,6 +30,13 @@ views of one layout. The JSON round-trips through
 `json.dumps(d, indent=2, ensure_ascii=False)` with no diff churn, so a scripted
 single-index edit stays a single-hunk diff.
 
+## Home-row Shift tuning
+
+The active f/j hold-taps are `left_index` / `right_index` in the keymap, with
+`HRM_SHIFT_PRIOR_IDLE_MS` as their shared calibration knob. See README's
+"Home-row Shift" section for the positional-hold caveat and hand tests. Behavior
+edits must also update the JSON's `custom_defined_behaviors` string.
+
 ## Modifier chords: two different encodings
 
 The keymap and the layout JSON do NOT share the chord syntax. `config/glove80.keymap`
