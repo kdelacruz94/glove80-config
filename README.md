@@ -21,6 +21,46 @@ Excel_Code, Excel_TBD) for Office/dev contexts, and a **Gaming** family (Gaming/
 Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persistent
 `&to`, using the same mechanism Engrammer uses for base-alphabet switching.
 
+### Home-row Shift (f/j)
+
+The base f/j keys (positions 38/41, left/right C2R4) hold Shift. Their active
+`left_index` / `right_index` behaviors use dedicated tuning; other home-row
+modifiers and layer bindings keep their existing settings.
+
+| ZMK setting | Before → after | Reason |
+|---|---|---|
+| `flavor` | `tap-preferred` → `hold-preferred` | Shift resolves when the opposite-hand key goes down, even if f/j is released first. |
+| `hold-trigger-on-release` | enabled → omitted (false) | Check the existing opposite-hand position list on press, protecting same-hand rolls. |
+| `quick-tap-ms` | 300 → 0 | A recent f/j tap no longer forces the next use to be a letter. |
+| `require-prior-idle-ms` | 150 → 100 | Shorten the capitalization lockout while retaining protection during typing streaks. |
+| `tapping-term-ms` | 180 → 180 | Preserve standalone Shift and deliberate same-hand Shift timing. |
+
+This adapts the positional protection in [urob's timer-less HRMs](https://github.com/urob/zmk-config#timeless-homerow-mods)
+for Shift-first release order, using [ZMK's interrupt flavors](https://zmk.dev/docs/keymaps/behaviors/hold-tap#interrupt-flavors)
+and [positional hold-tap](https://zmk.dev/docs/keymaps/behaviors/hold-tap#positional-hold-tap-and-hold-trigger-key-positions).
+`balanced` still requires the other key to be released first. In this MoErgo
+fork, `hold-preferred` with release-time position checks can commit a hold before
+checking the position, so these two behaviors check on press instead. This also
+means same-hand multi-mod chords starting with f/j need a 180 ms hold first.
+
+After flashing **each half's matching UF2**, test in a plain text editor:
+
+1. From idle, press f, press y/u/n, release f first, release the other key;
+   repeat rapidly. Expect `Y U N`, with no extra f. Mirror with j + q/w/v:
+   expect `Q W V`, with no extra j. Also try the other key's release first.
+2. Tap f, wait about 200 ms, use f + y as above; expect `fY`. Mirror j + q:
+   expect `jQ`. Type `a`, wait about 120 ms, then f + y; expect `aY`.
+3. Type `fj fjord fluffy jiffy jazz` at normal speed, including overlapping
+   f→r and j→u rolls. Expect lowercase text without accidental capitals.
+4. Hold f/j alone for over 180 ms before using a same-hand letter or Shift-click;
+   expect Shift. A short isolated f/j tap must still type its letter.
+
+The calibration knob is `HRM_SHIFT_PRIOR_IDLE_MS` near the top of the keymap
+(and in the JSON's `custom_defined_behaviors`): reduce 100 to 80 if cross-hand
+capitalization during typing still emits f/j; raise it to 120 for accidental
+capitals or noticeable f/j tap delay. Below 100 ms, the current typing-streak
+guard deliberately produces a letter. Rebuild after changing the knob.
+
 ### Terminal layer (layer 30, `Terminal`)
 
 Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr actions
