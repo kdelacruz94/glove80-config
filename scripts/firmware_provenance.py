@@ -79,7 +79,7 @@ def record(build_dir):
     identity = {
         "schema_version": 1,
         "repository": os.environ["GITHUB_REPOSITORY"],
-        "config_sha": command("git", "-C", str(repo), "rev-parse", "HEAD"),
+        "config_sha": command("git", "-c", f"safe.directory={repo}", "-C", str(repo), "rev-parse", "HEAD"),
         "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
         "workflow_sha": os.environ["GITHUB_WORKFLOW_SHA"],
         "workflow_file_sha256": digest(workflow),

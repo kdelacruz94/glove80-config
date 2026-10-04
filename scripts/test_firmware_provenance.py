@@ -96,8 +96,13 @@ class BundleTests(unittest.TestCase):
                    GITHUB_WORKSPACE=str(repo), GITHUB_REPOSITORY="owner/config",
                    GITHUB_WORKFLOW_REF="owner/config/.github/workflows/build.yml@ref",
                    GITHUB_WORKFLOW_SHA="a" * 40, GITHUB_RUN_ID="123",
-                   GITHUB_RUN_ATTEMPT="1", GITHUB_SERVER_URL="https://github.com")
-        with patch.dict("os.environ", env), patch.object(provenance, "command", return_value="tool identity"):
+                   GITHUB_RUN_ATTEMPT="1", GITHUB_SERVER_URL="https://github.com",
+                   GIT_TEST_ASSUME_DIFFERENT_OWNER="1", GIT_CONFIG_GLOBAL=os.devnull,
+                   GIT_CONFIG_NOSYSTEM="1")
+        run_command = provenance.command
+        def command(*args):
+            return run_command(*args) if args[0] == "git" else "tool identity"
+        with patch.dict("os.environ", env), patch.object(provenance, "command", side_effect=command):
             with self.assertRaises(FileNotFoundError):
                 provenance.record(build)
             (build / "artifacts").rmdir()
