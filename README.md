@@ -197,17 +197,50 @@ and never edited directly — see the code source-of-truth policy in
 2. Export **both** the `.keymap` and the `.json`.
 3. Drop them in as `config/glove80.keymap` and `layout/<name>.json`, commit, push.
 4. CI builds; download `firmware` from the run's artifacts.
-5. Flash `glove80_lh-zmk.uf2` to the **left** half and `glove80_rh-zmk.uf2` to the
+5. Flash `raw_hid_adapter-glove80_lh-zmk.uf2` to the **left** half and `glove80_rh-zmk.uf2` to the
    **right**. Unlike the editor's combined download, these are **per-half — do not
    flash the same file to both.**
 
 If you export a new layout (new UUID), update `CONFIG_HID_VIZ_CONFIG_ID` to match.
 
+## Pinned firmware builds and provenance
+
+`config/west.yml` pins the known-green source graph from
+[run 37090566575](https://github.com/kdelacruz94/glove80-config/actions/runs/37090566575),
+including imported Zephyr and the Raw HID static-buffer fix. The Zephyr override
+retains MoErgo's imports and exclusions; top-level definitions take precedence
+under [West's import rules](https://docs.zephyrproject.org/latest/develop/west/manifest.html#manifest-import-details).
+Dependency upgrades are reviewed manifest edits. CI rejects floating revisions
+throughout the resolved graph and active checkouts that differ from their pins.
+
+`.github/workflows/build.yml` owns the compatible MoErgo build commands at
+`ce69e85f585c724142aae37ddf8a7e019ff19e93`, pins every action to a full SHA,
+and uses the baseline compiler image by digest for matrix parsing and compilation.
+The hosted Ubuntu runner, Docker execution, and artifact service remain external
+infrastructure. These pins establish input identity; byte-identical firmware has
+not been demonstrated. Compare UF2 checksums before claiming reproducibility.
+
+Each downloaded `firmware` archive includes both board-specific UF2s,
+`SHA256SUMS`, and a `provenance-<board>.json` for each half. Metadata records the
+config commit, workflow ref/SHA/file hash, action SHAs, container digest, board and
+shield, tool versions, run ID/attempt/URL, source graph hashes, and UF2 checksum.
+`west-frozen-<board>.yml` freezes actual active checkouts;
+`west-resolved-<board>.yml` also records pinned optional projects disabled by West's
+group filters. CI compares both graphs and the build identities between halves
+before publishing the final archive; either missing UF2 fails packaging.
+
+After extracting an archive, verify its UF2s with `sha256sum -c SHA256SUMS`.
+To also check metadata, both graphs, and agreement between halves, run
+`python3 scripts/firmware_provenance.py verify <extracted-directory>` from this repo.
+Local checks are `python3 scripts/check_layout_json.py`,
+`python3 -m unittest discover -s scripts -p 'test_*.py'`, and `actionlint` when installed.
+The actual firmware acceptance check remains the two CI board builds.
+
 ## Two traps worth remembering
 
 **Build from MoErgo's fork, not upstream ZMK.** The `glove80_lh` / `glove80_rh`
-boards exist only in `moergo-sc/zmk`. The reusable workflow must also be MoErgo's
-copy — `zmkfirmware/zmk@main` has moved to Zephyr 4.1 hardware-model-v2 and dies
+boards exist only in `moergo-sc/zmk`. The build commands must retain MoErgo's compatible
+workflow path — `zmkfirmware/zmk@main` has moved to Zephyr 4.1 hardware-model-v2 and dies
 with `KeyError: 'qualifiers'` on these boards, after compiling most of the tree.
 MoErgo's own template repo still points at zmkfirmware and is stale for this reason;
 the config that actually builds green is

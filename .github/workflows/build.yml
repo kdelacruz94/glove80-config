@@ -1,22 +1,100 @@
 name: Build ZMK firmware
 on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+
+# MoErgo-compatible commands adapted from moergo-sc/zmk's
+# .github/workflows/build-user-config.yml at ce69e85f585c724142aae37ddf8a7e019ff19e93.
+# Keep hardware-model-v1 board/shield support; upstream ZMK's workflow is incompatible.
+# Image digest observed in known-green run 37090566575 (2026-10-03).
+env:
+  BUILD_IMAGE: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
 
 jobs:
+  matrix:
+    runs-on: ubuntu-22.04
+    container:
+      image: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
+    outputs:
+      build_matrix: ${{ steps.matrix.outputs.build_matrix }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
+      - id: matrix
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, yaml
+          print('build_matrix=' + json.dumps(yaml.safe_load(open('build.yaml'))))
+          PY
+
   build:
-    # Must be MoErgo's copy of the reusable workflow, not zmkfirmware's.
-    # zmkfirmware/zmk@main has moved to Zephyr 4.1 hardware-model-v2, whose
-    # board-resolution step expects a `qualifiers` key that the Glove80 board
-    # definitions in moergo-sc/zmk do not carry -- the build compiles ~317/344
-    # objects and then dies with `KeyError: 'qualifiers'`.
-    #
-    # NOTE: moergo-sc/glove80-zmk-config-west (MoErgo's own template) still
-    # points at zmkfirmware and is stale for this reason. The working
-    # reference is ovandongen/glove80-zmk-config-west.
-    uses: moergo-sc/zmk/.github/workflows/build-user-config.yml@main
+    runs-on: ubuntu-22.04
+    container:
+      image: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
+    needs: matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
+    env:
+      BOARD: ${{ matrix.board }}
+      # An exported empty SHIELD is an invalid Zephyr input on the right half.
+      BUILD_SHIELD: ${{ matrix.shield }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
+      - name: Prepare isolated west workspace
+        run: |
+          base_dir="$(mktemp -d)"
+          build_dir="$(mktemp -d)"
+          cp -R config "$base_dir/config"
+          echo "base_dir=$base_dir" >> "$GITHUB_ENV"
+          echo "build_dir=$build_dir" >> "$GITHUB_ENV"
+          west init -l "$base_dir/config"
+      - name: West Update
+        working-directory: ${{ env.base_dir }}
+        run: west update --fetch-opt=--filter=tree:0
+      - name: Verify complete source pins
+        working-directory: ${{ env.base_dir }}
+        run: python3 "$GITHUB_WORKSPACE/scripts/firmware_provenance.py" sources "$build_dir"
+      - name: West Zephyr export
+        working-directory: ${{ env.base_dir }}
+        run: west zephyr-export
+      - name: West Build
+        working-directory: ${{ env.base_dir }}
+        shell: bash
+        run: |
+          shield_args=()
+          if [ -n "$BUILD_SHIELD" ]; then shield_args=("-DSHIELD=$BUILD_SHIELD"); fi
+          west build -s zmk/app -d "$build_dir" -b "$BOARD" -- \
+            "-DZMK_CONFIG=$base_dir/config" "-DZMK_EXTRA_MODULES=$GITHUB_WORKSPACE" \
+            "${shield_args[@]}"
+      - name: Package UF2 and provenance
+        run: python3 scripts/firmware_provenance.py record "$build_dir"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, baseline
+        with:
+          name: artifact-${{ matrix.board }}
+          path: ${{ env.build_dir }}/artifacts
+          if-no-files-found: error
+
+  bundle:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: artifact-*
+          path: firmware
+          merge-multiple: true
+      - name: Verify both halves and their source identity
+        run: python3 scripts/firmware_provenance.py verify firmware
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, baseline
+        with:
+          name: firmware
+          path: firmware
+          if-no-files-found: error
 
   layout-json:
-    # The Layout Editor rejects ZMK's parenthesised modifier strings on import.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
       - run: python3 scripts/check_layout_json.py
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'

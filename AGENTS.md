@@ -81,8 +81,9 @@ current when adding one, because the keymap alone cannot show the dependency:
   and `ctrl+=` / `ctrl+-` / `ctrl+0` for text zoom. Change a chord there first, then re-map the key.
 
 There is no local build. CI (`.github/workflows/build.yml`) is the only acceptance
-check -- see the two traps in `README.md` before touching `config/west.yml` or the
-workflow.
+check. Before editing source pins or the workflow, read README's "Pinned firmware
+builds and provenance" and "Two traps worth remembering" sections; imported Zephyr
+needs its own override with MoErgo's imports/exclusions preserved.
 
 ## Maintaining this file
 
