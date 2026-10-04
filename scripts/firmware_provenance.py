@@ -47,7 +47,7 @@ def sources(build_dir):
 def record(build_dir):
     # PyYAML is supplied by the pinned build image's west installation.
     import yaml
-    board, shield = os.environ["BOARD"], os.environ.get("SHIELD", "")
+    board, shield = os.environ["BOARD"], os.environ.get("BUILD_SHIELD", "")
     expected_shield, filename = EXPECTED[board]
     if shield != expected_shield:
         raise ValueError(f"unexpected shield for {board}: {shield}")
@@ -71,7 +71,10 @@ def record(build_dir):
     if any(not SHA.fullmatch(action.rsplit("@", 1)[-1]) for action in actions):
         raise ValueError("all actions must have full SHA pins")
     cache = (build_dir / "CMakeCache.txt").read_text()
-    compiler = re.search(r"^CMAKE_C_COMPILER:FILEPATH=(.+)$", cache, re.M)[1]
+    # Read the selected compiler from CMake's generated language configuration;
+    # its cache entry type and presence vary between toolchains.
+    compiler_info, = build_dir.glob("CMakeFiles/*/CMakeCCompiler.cmake")
+    compiler = re.search(r'^set\(CMAKE_C_COMPILER "([^"\n]+)"\)', compiler_info.read_text(), re.M)[1]
     sdk_dir = re.search(r"^ZEPHYR_SDK_INSTALL_DIR:PATH=(.+)$", cache, re.M)[1]
     identity = {
         "schema_version": 1,

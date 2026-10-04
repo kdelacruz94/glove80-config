@@ -1,6 +1,8 @@
 """Exercise bundle integrity and source pin enforcement without building firmware."""
 import copy
 import json
+import os
+import subprocess
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -84,10 +86,13 @@ class BundleTests(unittest.TestCase):
         (build / "sdk").mkdir()
         (build / "sdk/sdk_version").write_text("0.16.9")
         (build / "CMakeCache.txt").write_text(
-            f"CMAKE_C_COMPILER:FILEPATH=/compiler\nZEPHYR_SDK_INSTALL_DIR:PATH={build / 'sdk'}\n")
+            f"ZEPHYR_SDK_INSTALL_DIR:PATH={build / 'sdk'}\n")
+        compiler_info = build / "CMakeFiles/3.31.1/CMakeCCompiler.cmake"
+        compiler_info.parent.mkdir(parents=True)
+        compiler_info.write_text('set(CMAKE_C_COMPILER "/compiler")\n')
         for kind in ["frozen", "resolved"]:
             (build / f"west-{kind}-glove80_lh.yml").write_text("source graph")
-        env = dict(BOARD="glove80_lh", SHIELD="raw_hid_adapter", BUILD_IMAGE=image,
+        env = dict(BOARD="glove80_lh", BUILD_SHIELD="raw_hid_adapter", BUILD_IMAGE=image,
                    GITHUB_WORKSPACE=str(repo), GITHUB_REPOSITORY="owner/config",
                    GITHUB_WORKFLOW_REF="owner/config/.github/workflows/build.yml@ref",
                    GITHUB_WORKFLOW_SHA="a" * 40, GITHUB_RUN_ID="123",
@@ -103,6 +108,29 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(metadata["container"], image)
         self.assertEqual(metadata["firmware_sha256"], provenance.digest(build / "zephyr/zmk.uf2"))
         self.assertTrue(metadata["actions"])
+
+
+    def test_right_build_does_not_export_empty_shield(self):
+        try:
+            import yaml
+        except ImportError:
+            self.skipTest("workflow regression requires PyYAML")
+        repo = Path(__file__).resolve().parents[1]
+        job = yaml.safe_load((repo / ".github/workflows/build.yml").read_text())["jobs"]["build"]
+        step = next(s for s in job["steps"] if s.get("name") == "West Build")
+        # Exercise the actual workflow shell with its evaluated right-half env.
+        env = dict(os.environ, BOARD="glove80_rh", base_dir="/sources",
+                   build_dir="/build", GITHUB_WORKSPACE=str(repo))
+        env.pop("SHIELD", None)
+        for key in job["env"]:
+            if "SHIELD" in key:
+                env[key] = ""
+        stub = self.bundle / "west"
+        stub.write_text('#!/bin/sh\n[ "${SHIELD+x}" != x ] && [ "$#" -eq 10 ]\n')
+        stub.chmod(0o755)
+        env["PATH"] = str(self.bundle) + os.pathsep + env["PATH"]
+        result = subprocess.run(["bash", "-e", "-c", step["run"]], env=env, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
 
 
 class SourceTests(unittest.TestCase):

@@ -36,7 +36,8 @@ jobs:
       matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
     env:
       BOARD: ${{ matrix.board }}
-      SHIELD: ${{ matrix.shield }}
+      # An exported empty SHIELD is an invalid Zephyr input on the right half.
+      BUILD_SHIELD: ${{ matrix.shield }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
       - name: Prepare isolated west workspace
@@ -61,7 +62,7 @@ jobs:
         shell: bash
         run: |
           shield_args=()
-          if [ -n "$SHIELD" ]; then shield_args=("-DSHIELD=$SHIELD"); fi
+          if [ -n "$BUILD_SHIELD" ]; then shield_args=("-DSHIELD=$BUILD_SHIELD"); fi
           west build -s zmk/app -d "$build_dir" -b "$BOARD" -- \
             "-DZMK_CONFIG=$base_dir/config" "-DZMK_EXTRA_MODULES=$GITHUB_WORKSPACE" \
             "${shield_args[@]}"
