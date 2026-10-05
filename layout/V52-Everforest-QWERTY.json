@@ -7765,7 +7765,7 @@
         "value": "&kp",
         "params": [
           {
-            "value": "UP"
+            "value": "DOWN"
           }
         ]
       },
@@ -7773,7 +7773,7 @@
         "value": "&kp",
         "params": [
           {
-            "value": "DOWN"
+            "value": "UP"
           }
         ]
       },
