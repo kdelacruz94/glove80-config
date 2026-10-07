@@ -32,10 +32,10 @@ single-index edit stays a single-hunk diff.
 
 ## Home-row Shift tuning
 
-The active f/j hold-taps are `left_index` / `right_index` in the keymap, with
-`HRM_SHIFT_PRIOR_IDLE_MS` as their shared calibration knob. See README's
-"Home-row Shift" section for the positional-hold caveat and hand tests. Behavior
-edits must also update the JSON's `custom_defined_behaviors` string.
+Before tuning the active f/j hold-taps (`left_index` / `right_index`), read
+README's "Home-row Shift" section for the roll/nested-tap distinction, timer and
+prior-idle knobs, and hand tests. Prior idle cannot protect word-start rolls.
+Behavior edits must also update the JSON's `custom_defined_behaviors` string.
 
 ## Modifier chords: two different encodings
 

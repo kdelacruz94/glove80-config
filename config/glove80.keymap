@@ -871,6 +871,7 @@
 // TIP: Add more setting overrides here instead of editing them below.
 
 // f/j Shift tuning only; keep the other home-row modifiers on their defaults.
+#define HRM_SHIFT_TAPPING_TERM_MS 280
 #define HRM_SHIFT_PRIOR_IDLE_MS 100
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2406,10 +2407,10 @@ behaviors {
   #endif
   left_index: homey_left_index {
     compatible = "zmk,behavior-hold-tap";
-    flavor = "hold-preferred"; // resolve Shift on the other key's press
+    flavor = "balanced"; // rolls tap; nested opposite-hand taps hold Shift
     hold-trigger-key-positions = <RIGHT_HAND_KEYS>;
-    // Check positions on press so same-hand typing still resolves to tap.
-    tapping-term-ms = <LEFT_INDEX_HOLDING_TIME>;
+    hold-trigger-on-release; // filter the released target before balanced holds
+    tapping-term-ms = <HRM_SHIFT_TAPPING_TERM_MS>;
     quick-tap-ms = <0>; // a recent f/j tap must not lock out Shift
     require-prior-idle-ms = <HRM_SHIFT_PRIOR_IDLE_MS>;
     #binding-cells = <2>;
@@ -2500,10 +2501,10 @@ behaviors {
   #endif
   right_index: homey_right_index {
     compatible = "zmk,behavior-hold-tap";
-    flavor = "hold-preferred"; // resolve Shift on the other key's press
+    flavor = "balanced"; // rolls tap; nested opposite-hand taps hold Shift
     hold-trigger-key-positions = <LEFT_HAND_KEYS>;
-    // Check positions on press so same-hand typing still resolves to tap.
-    tapping-term-ms = <RIGHT_INDEX_HOLDING_TIME>;
+    hold-trigger-on-release; // filter the released target before balanced holds
+    tapping-term-ms = <HRM_SHIFT_TAPPING_TERM_MS>;
     quick-tap-ms = <0>; // a recent f/j tap must not lock out Shift
     require-prior-idle-ms = <HRM_SHIFT_PRIOR_IDLE_MS>;
     #binding-cells = <2>;
