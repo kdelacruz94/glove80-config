@@ -37,6 +37,10 @@ README's "Home-row Shift" section for the roll/nested-tap distinction, timer and
 prior-idle knobs, and hand tests. Prior idle cannot protect word-start rolls.
 Behavior edits must also update the JSON's `custom_defined_behaviors` string.
 
+For Win+Space diagnostics and flash tests, read README's "Win+Space" section.
+Space's 200 ms Symbol hold timer applies even with a modifier held; the GUI-aware
+wrapper must retain GUI via `keep-mods` so the host sees the shortcut.
+
 ## Modifier chords: two different encodings
 
 The keymap and the layout JSON do NOT share the chord syntax. `config/glove80.keymap`
