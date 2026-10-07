@@ -94,6 +94,31 @@ word-start rolls versus standalone Shift delay. Change prior idle to tune
 capitalization during typing streaks; it does not solve rolls from idle.
 Synchronize both files, rebuild, and repeat the checklist after any adjustment.
 
+### Win+Space
+
+On Windows, both home-row pinkies hold **LGUI** (Win); the middle fingers hold
+Ctrl. Hold Win alone for at least 300 ms before testing shortcuts. The left
+pinky's opposite-hand position list includes every right thumb, including
+Space at position 74 (`KEY_RH_T4`).
+
+Space normally taps Space or holds Symbol after 200 ms. That timer also used
+to select Symbol with Win held, consuming a lingering Win+Space without sending
+Space to the host. `&win_space` now uses
+[mod-morph with `keep-mods`](https://github.com/moergo-sc/zmk/blob/ce69e85f585c724142aae37ddf8a7e019ff19e93/docs/docs/keymaps/behaviors/mod-morph.md#keep-mods)
+to send Space immediately while LGUI is active, retaining Win for the host's
+Win+Space → LWin+LAlt+P remap. Ordinary Space/Symbol and f/j tuning are unchanged.
+
+After flashing both matching UF2s on the Windows work desktop:
+
+1. Hold a Win pinky for 300 ms, then press Space. Test a quick tap and a
+   350 ms press, with both release orders. Repeat with the other Win pinky.
+   Expect the action bound to LWin+LAlt+P each time, without Symbol activation.
+2. Test Win+E (Explorer), Win alone (Start), and Space alone (a space).
+   Without Win, hold Space and type a symbol to confirm Symbol access.
+3. Pause at least half a second before each word, then type `first` and `just`
+   quickly several times. Expect exactly those lowercase words, without
+   missing f/j or stray capitals.
+
 ### Terminal layer (layer 30, `Terminal`)
 
 Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr actions
