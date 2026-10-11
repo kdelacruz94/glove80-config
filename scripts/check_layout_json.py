@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail if a layout JSON key code uses ZMK's parenthesised modifier string.
+"""Require the expected layout with populated layers and valid modifier encoding.
 
 MoErgo's Layout Editor rejects `LG(LS(S))` on import; it wants nested params:
 `{"value": "LG", "params": [{"value": "LS", "params": [{"value": "S"}]}]}`.
@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 BAD = re.compile(r"^[A-Z][A-Z0-9_]*\(")
+EXPECTED_LAYOUT = Path("layout/V52-Everforest-QWERTY.json")
 
 
 def walk(node, path, bad):
@@ -30,10 +31,20 @@ def walk(node, path, bad):
 
 
 def main() -> int:
+    if not EXPECTED_LAYOUT.is_file():
+        print(f"required layout file missing: {EXPECTED_LAYOUT}", file=sys.stderr)
+        return 1
     bad = []
     for path in sorted(Path("layout").glob("*.json")):
-        layers = json.loads(path.read_text(encoding="utf-8")).get("layers", [])
+        data = json.loads(path.read_text(encoding="utf-8"))
+        layers = data.get("layers") if isinstance(data, dict) else None
+        if not isinstance(layers, list) or not layers:
+            print(f"{path}: layers must be a non-empty array", file=sys.stderr)
+            return 1
         for li, layer in enumerate(layers):
+            if not isinstance(layer, list) or not layer:
+                print(f"{path}: layer {li} must be a non-empty array", file=sys.stderr)
+                return 1
             for ki, key in enumerate(layer):
                 walk(key, f"{path}: layer {li} index {ki}", bad)
     for line in bad:
