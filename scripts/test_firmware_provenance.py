@@ -139,6 +139,25 @@ class BundleTests(unittest.TestCase):
 
 
 class SourceTests(unittest.TestCase):
+    def test_build_events_and_superseded_run_cancellation(self):
+        try:
+            import yaml
+        except ImportError:
+            self.skipTest("workflow regression requires PyYAML")
+        repo = Path(__file__).resolve().parents[1]
+        # BaseLoader preserves GitHub's `on` key instead of YAML 1.1 boolean coercion.
+        workflow = yaml.load((repo / ".github/workflows/build.yml").read_text(),
+                             Loader=yaml.BaseLoader)
+        self.assertEqual(workflow["on"], {
+            "push": {"branches": ["main"]},
+            "pull_request": "", "workflow_dispatch": "",
+        })
+        self.assertEqual(workflow["concurrency"], {
+            "group": "${{ github.workflow }}-${{ github.event_name }}-"
+                     "${{ github.event.pull_request.number || github.ref }}",
+            "cancel-in-progress": "true",
+        })
+
     def test_source_validation_and_active_freeze(self):
         active = SimpleNamespace(name="zmk", revision="a" * 40, abspath="zmk")
         optional = SimpleNamespace(name="unused", revision="b" * 40, abspath="unused")
