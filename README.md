@@ -23,76 +23,74 @@ Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persist
 
 ### Home-row Shift (f/j)
 
-The base f/j keys (positions 38/41, left/right C2R4) hold Shift. Their active
-`left_index` / `right_index` behaviors use dedicated tuning; other home-row
-modifiers and layer bindings keep their existing settings.
+The base f/j keys (positions 38/41, left/right C2R4) hold Shift. Only their
+active `left_index` / `right_index` behaviors receive this tuning; the other
+home-row modifiers keep their existing settings.
 
-| ZMK setting | Previous → current | Reason |
+| ZMK setting | Value | Effect |
 |---|---|---|
-| `flavor` | `hold-preferred` → `balanced` | A roll that releases f/j before the target taps; an opposite-hand target pressed and released while f/j is held selects Shift. |
-| `hold-trigger-on-release` | omitted → enabled | Evaluate the existing opposite-hand position list on release, before balanced commits an interrupted hold. |
-| `tapping-term-ms` | 180 → 280 | Give word-start rolls more time to release f/j before the standalone Shift timer expires. Applies only to these two behaviors. |
-| `quick-tap-ms` | 0 → 0 | A recent f/j tap does not impose a separate forced-letter window. |
-| `require-prior-idle-ms` | 100 → 100 | Retain protection during typing streaks. This cannot protect a word that starts after a long idle. |
-| `hold-trigger-key-positions` | opposite hand → opposite hand | Preserve the existing left/right position lists. |
+| `flavor` | `tap-preferred` | An overlapping or nested letter tap cannot select Shift before the timer. |
+| `tapping-term-ms` | 400 | Require a deliberate standalone hold before using Shift. |
+| `require-prior-idle-ms` | 200 | A non-modifier press less than 200 ms before f/j forces a letter, even on a long hold. |
+| `quick-tap-ms` | 0 | No additional same-key repeat guard. |
+| `hold-trigger-key-positions` | opposite hand | Check the first other **press**, including a same-hand key held across the timeout. |
+| `hold-trigger-on-release` | omitted (false) | A held same-hand letter can veto Shift before the timer expires. |
 
-PR #10 made opposite-hand key **presses** select Shift immediately. From idle,
-`f-down → i-down → f-up → i-up` therefore lost f and produced `I`.
-`balanced` waits for the other key's release, so this roll now produces `fi`
-when f is released before 280 ms. In this QWERTY layout, **j→o is same-hand**
-(positions 41→31), so the old press-time position filter already protected it
-below 180 ms. Holding j past that timer could still lose j; the longer term
-protects rolls up to 280 ms. j→q is the mirrored cross-hand check.
+PR #10's `hold-preferred` setting selected Shift on an opposite-hand press.
+PR #13's `balanced` setting instead selected Shift on an opposite-hand release:
+`f-down → o-down → o-up → f-up` could still produce `O`, losing f.
+With release-time position checks, `j-down → u-down → timer → j-up → u-up`
+could produce `U`, losing j: no target position had been recorded when the
+280 ms timer fired, even though u is on j's own hand. A prior idle over 100 ms
+allowed both bugs; the old streak guard masked them only during faster typing.
 
-The trade-off: for quick deliberate capitalization, keep f/j held until the
-opposite-hand letter is released. `f-down → i-down → i-up → f-up` produces `I`;
-a quick Shift-first release instead produces `fi`. To capitalize with either
-release order, or use same-hand Shift or Shift-click, hold f/j **alone for at
-least 300 ms** first. Shift activation by timeout is now 100 ms later.
-An opposite-hand nested tap is indistinguishable from deliberate Shift and
-still shifts; a roll held to the 280 ms boundary also selects Shift.
+The current `tap-preferred` setting removes nested-tap capitalization.
+Press-time positional checks also make same-hand overlaps tap regardless of
+how long f/j linger, provided the same-hand press precedes the timer.
+Increasing prior idle alone cannot protect a word after a long pause.
+A revert to the original 180 ms tap-preferred timer would retain the short
+opposite-hand timeout window, so this tuning uses 400 ms.
 
-These rules follow [ZMK's interrupt flavors](https://zmk.dev/docs/keymaps/behaviors/hold-tap#interrupt-flavors)
-and [positional hold-tap](https://zmk.dev/docs/keymaps/behaviors/hold-tap#positional-hold-tap-and-hold-trigger-key-positions),
-checked against the [pinned MoErgo implementation](https://github.com/moergo-sc/zmk/blob/ce69e85f585c724142aae37ddf8a7e019ff19e93/app/src/behaviors/behavior_hold_tap.c).
-Increasing the timer alone cannot fix f→i with `hold-preferred`, because i's
-press selects Shift immediately. The other home-row modifiers use
-`tap-preferred`; they do not share that immediate-press defect.
+**Deliberate Shift:** pause at least 250 ms after the previous letter press,
+hold f/j alone for at least **450 ms**, then press the target. Either release
+order produces a capital. This also supports same-hand Shift and Shift-click
+once Shift has activated. A quick f/j + letter gesture now types both letters;
+it must no longer be used for capitalization.
 
-After installing **each half's matching UF2**, test in a plain text editor:
+This is a timing distinction, not a way to infer intention. An opposite-hand
+roll that keeps f/j down for 400 ms or more can still select Shift after a long
+idle. No hold-tap setting can distinguish that event sequence from deliberate
+Shift. Ordinary rolls below 400 ms produce lowercase letters in either release
+order; the host regression traces cover f/j dwell times through 330 ms.
 
-1. Pause at least half a second **before each word**, then type it naturally
-   without pausing after f/j: `first file find fig fish for` and
-   `join job joy jump jazz jest jiffy`. Repeat each several times at normal
-   speed. Expect every initial f/j, all lowercase, especially `first` and
-   `join` (never `Irst` or `Oin`). Also test `fjord fluffy`.
-2. From idle, overlap f→i and release f first, then i: expect `fi`. Mirror
-   j→q: expect `jq`. Test same-hand j→o and f→r: expect `jo` and `fr`.
-   Keep the first key's dwell below 280 ms; no artificial pause is needed.
-3. For deliberate Shift, press f, tap and release i/y/u, then release f:
-   expect `I Y U`, without f. Mirror j + q/w/v: expect `Q W V`, without j.
-   Keep the target's entire tap inside the hold of f/j.
-4. Hold f/j alone for at least 300 ms, then press an opposite-hand letter.
-   Check both release orders: expect the capital, without f/j. Also check
-   same-hand f + r and j + o, plus Shift-click. Short isolated f/j taps must
-   still produce their letters.
-5. Tap f, wait about 200 ms, then deliberately Shift+i as in step 3: expect
-   `fI`. Mirror j + q: `jQ`. Type `a`, wait about 120 ms, then Shift+i: `aI`.
-   Within 100 ms of a prior non-modifier press, the streak guard intentionally
-   forces a letter instead.
-6. Type these quickly, then repeat with a pause before each f/j word:
-   `first join forces for joyful jobs.`
-   `jiffy fish jump for fun in july.`
-   `we find fresh figs and join friends for jazz.`
-   Expect exactly the lowercase sentences, without missing letters or
-   accidental capitals. Check ordinary Ctrl/Alt/Super shortcuts too.
+The behavior was checked against the [pinned MoErgo hold-tap source](https://github.com/moergo-sc/zmk/blob/ce69e85f585c724142aae37ddf8a7e019ff19e93/app/src/behaviors/behavior_hold_tap.c)
+and its [matching documentation](https://github.com/moergo-sc/zmk/blob/ce69e85f585c724142aae37ddf8a7e019ff19e93/docs/docs/keymaps/behaviors/hold-tap.mdx).
+Run `python3 scripts/check_home_row_shift.py` to replay the actual pinned C
+implementation with host event/timer adapters. It downloads that immutable
+source, checks its SHA256, and reads the keymap's active settings and position
+lists; it also checks the JSON's f/j behavior copies. An offline source copy
+can be supplied with `--source <behavior_hold_tap.c>`. The replay excludes other
+behaviors, transport/scanning, Zephyr scheduling, and real HID reports; both CI
+firmware builds and keyboard testing are still required.
 
-The calibration knobs are `HRM_SHIFT_TAPPING_TERM_MS` (280) and
-`HRM_SHIFT_PRIOR_IDLE_MS` (100) near the top of the keymap and in the JSON's
-`custom_defined_behaviors`. Change the term to tune tolerance for lingering
-word-start rolls versus standalone Shift delay. Change prior idle to tune
-capitalization during typing streaks; it does not solve rolls from idle.
-Synchronize both files, rebuild, and repeat the checklist after any adjustment.
+After flashing **each half's matching UF2**, test in a plain text editor:
+
+1. Pause at least half a second before each word, then type `for just if fun
+   jump of off` naturally. Repeat at normal and slower speeds; expect exactly
+   those lowercase words, including every f/j.
+2. Overlap f→o and j→w, trying each release order below 400 ms: expect `fo`
+   and `jw`. Overlap j→u and f→r with the target held beyond the timer:
+   expect `ju` and `fr` if the target was pressed before 400 ms.
+3. After a pause, hold f alone for 450 ms, then tap i: expect `I`, without f.
+   Mirror j + w: expect `W`, without j. Try both release orders; also check
+   f + r / j + u after the standalone hold and Shift-click.
+4. Type `of off if` rapidly; expect the exact lowercase text. Check ordinary
+   Ctrl/Alt/Super shortcuts too.
+
+The calibration knobs are `HRM_SHIFT_TAPPING_TERM_MS` (400) and
+`HRM_SHIFT_PRIOR_IDLE_MS` (200) near the top of the keymap and in the JSON's
+`custom_defined_behaviors`. Synchronize both files, rebuild, and repeat the
+checklist after any adjustment.
 
 ### Win+Space
 
