@@ -35,8 +35,10 @@ single-index edit stays a single-hunk diff.
 Before tuning the active f/j hold-taps (`left_index` / `right_index`), read
 README's "Home-row Shift" section for the standalone-hold requirement, timer and
 prior-idle knobs, host replay command, and hand tests. Prior idle cannot protect
-word-start rolls. Release-time position checks can leave the target unset at
-timeout; press-time checks protect same-hand keys held across that timeout.
+word-start rolls: the 150 ms timer can capitalize opposite-hand overlaps or
+same-hand targets arriving after timeout, losing f/j. Release-time position
+checks can leave the target unset at timeout; press-time checks protect
+same-hand keys held across that timeout.
 Behavior edits must also update the JSON's `custom_defined_behaviors` string.
 
 For Win+Space diagnostics and flash tests, read README's "Win+Space" section.
