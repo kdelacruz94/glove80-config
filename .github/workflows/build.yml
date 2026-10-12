@@ -104,4 +104,5 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
       - run: python3 scripts/check_layout_json.py
+      - run: python3 scripts/check_home_row_shift.py
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
