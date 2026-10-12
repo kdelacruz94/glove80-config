@@ -871,7 +871,7 @@
 // TIP: Add more setting overrides here instead of editing them below.
 
 // f/j Shift tuning only; keep the other home-row modifiers on their defaults.
-#define HRM_SHIFT_TAPPING_TERM_MS 400
+#define HRM_SHIFT_TAPPING_TERM_MS 150
 #define HRM_SHIFT_PRIOR_IDLE_MS 200
 
 //////////////////////////////////////////////////////////////////////////////

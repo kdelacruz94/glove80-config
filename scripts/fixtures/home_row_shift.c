@@ -57,7 +57,7 @@ static bool is_mod(uint32_t page,uint32_t key) { return key==1000; }
 
 static struct device devices[2];
 static const struct device *zmk_behavior_get_binding(char *name) { return &devices[!strcmp(name,"right")]; }
-static const char keys[80] = {[38]='f',[41]='j',[31]='o',[26]='r',[29]='u',[24]='w',[36]='s',[27]='t',[30]='i',[59]='m',[58]='n',[32]='p'};
+static const char keys[80] = {[23]='q',[38]='f',[41]='j',[31]='o',[26]='r',[29]='u',[24]='w',[36]='s',[27]='t',[30]='i',[59]='m',[58]='n',[32]='p'};
 static char output[256];
 static unsigned used, shifts, shift_presses;
 static int zmk_behavior_invoke_binding(struct zmk_behavior_binding *b,struct zmk_behavior_binding_event e,bool down) {
@@ -102,13 +102,12 @@ static void reset(void) {
     shifts=used=shift_presses=0; output[0]=0; now=0;
 }
 static unsigned failures, cases;
-static void expect(const char *label,const char *wanted) {
-    bool want_shift = !strcmp(wanted,"I") || !strcmp(wanted,"W");
+static void expect(const char *label,const char *wanted,unsigned wanted_shift) {
     cases++;
-    if(strcmp(output,wanted) || shifts || (shift_presses>0)!=want_shift) { failures++; printf("FAIL %s: expected %s, got %s (Shift=%u)\n",label,wanted,output,shifts); }
+    if(strcmp(output,wanted) || shifts || shift_presses!=wanted_shift) { failures++; printf("FAIL %s: expected %s, got %s (Shift=%u, presses=%u, wanted=%u)\n",label,wanted,output,shifts,shift_presses,wanted_shift); }
 }
 static int position(char ch) { for(int i=0;i<80;i++) if(keys[i]==ch) return i; assert(!"unknown letter"); return -1; }
-static void word(const char *text,int gap,int dwell) {
+static void word(const char *text,int gap,int dwell,const char *wanted) {
     struct { int pos,time; bool down,used; } events[64];
     int length=strlen(text); assert(length<32);
     for(int i=0;i<length;i++) {
@@ -123,7 +122,9 @@ static void word(const char *text,int gap,int dwell) {
         for(int i=0;i<2*length;i++) if(!events[i].used && (k<0 || events[i].time<events[k].time || (events[i].time==events[k].time && !events[i].down))) k=i;
         key(events[k].pos,events[k].down,events[k].time); events[k].used=true;
     }
-    expect(text,text);
+    char label[64];
+    snprintf(label,sizeof(label),"%s gap=%d dwell=%d",text,gap,dwell);
+    expect(label,wanted,strcmp(text,wanted)?1:0);
 }
 int main(void) {
     devices[0].config=&left_cfg; devices[1].config=&right_cfg;
@@ -134,7 +135,7 @@ int main(void) {
         key(38,false,1130);
         key(26,true,1180);
         key(26,false,1230);
-        expect("for nested","for");
+        expect("for nested","for",0);
     reset();
         key(41,true,1000);
         key(29,true,1180);
@@ -144,7 +145,7 @@ int main(void) {
         key(36,false,1450);
         key(27,true,1500);
         key(27,false,1550);
-        expect("just timer","just");
+        expect("same-hand press after timeout","Ust",1);
     for(int side=0;side<2;side++) for(int order=0;order<2;order++) {
         int mod=side?41:38,target=side?24:30; const char *want=side?"jw":"fi";
         reset();
@@ -152,35 +153,92 @@ int main(void) {
         key(target,true,1050);
         key(order?target:mod,false,1090);
         key(order?mod:target,false,1130);
-        expect("cross-hand short tap",want);
+        expect("cross-hand short tap",want,0);
+        reset();
+        key(mod,true,1000);
+        key(target,true,1120);
+        key(order?target:mod,false,1140);
+        key(order?mod:target,false,1149);
+        expect("released before 150 ms",want,0);
         reset();
         key(mod,true,1000);
         key(side?29:26,true,1100);
         key(mod,false,1700);
         key(side?29:26,false,1750);
-        expect("same-hand excludes timeout",side?"ju":"fr");
+        expect("same-hand excludes timeout",side?"ju":"fr",0);
         reset();
         key(mod,true,1000);
         key(target,true,1000+left_cfg.tapping_term_ms+20);
         key(order?target:mod,false,1000+left_cfg.tapping_term_ms+80);
         key(order?mod:target,false,1000+left_cfg.tapping_term_ms+120);
-        expect("deliberate Shift",side?"W":"I");
+        expect("deliberate Shift",side?"W":"I",1);
+    }
+    /* Absolute times cover the 150 ms boundary and short deliberate holds. */
+    /* A target pressed at 149 ms still capitalizes if f/j overlaps timeout. */
+    const int holds[]={149,150,180,250};
+    for(int side=0;side<2;side++) for(int order=0;order<2;order++) for(unsigned h=0;h<sizeof(holds)/sizeof(holds[0]);h++) {
+        int mod=side?41:38,target=side?23:30,hold=holds[h];
+        reset();
+        key(mod,true,1000);
+        key(target,true,1000+hold);
+        key(order?target:mod,false,1000+hold+20);
+        key(order?mod:target,false,1000+hold+40);
+        expect("Quality/Inventory short hold",side?"Q":"I",1);
     }
     for(int side=0;side<2;side++) {
         int mod=side?41:38;
         reset();
         key(mod,true,1000);
         key(mod,false,1080);
-        expect("isolated tap",side?"j":"f");
+        expect("isolated tap",side?"j":"f",0);
         reset();
         key(31,true,1000);
         key(31,false,1040);
         key(mod,true,1150);
         key(mod,false,2000);
-        expect("prior idle forces tap",side?"oj":"of");
+        expect("prior idle forces tap",side?"oj":"of",0);
     }
     const char *words[]={"for","just","if","fun","jump","of","off"};
-    for(unsigned w=0;w<sizeof(words)/sizeof(words[0]);w++) for(int gap=60;gap<=180;gap+=30) for(int dwell=50;dwell<=240;dwell+=30) { reset(); word(words[w],gap,dwell); }
+    /* Fixed 150 ms expectations: rows are gaps 60..180, columns dwells 50..230.
+     * f/j dwell adds 90 ms. A word-start timeout loses f/j; subsequent letters
+     * capitalize only while Shift remains down. Prior-idle protects if/of/off. */
+    const char *expected[7][5][7]={
+        {
+            {"for","OR","OR","OR","OR","OR","OR"},
+            {"for","Or","OR","OR","OR","OR","OR"},
+            {"for","Or","Or","Or","OR","OR","OR"},
+            {"for","Or","Or","Or","Or","Or","OR"},
+            {"for","or","Or","Or","Or","Or","Or"},
+        },
+        {
+            {"just","just","just","just","just","just","just"},
+            {"just","just","just","just","just","just","just"},
+            {"just","just","just","just","just","just","just"},
+            {"just","Ust","Ust","Ust","Ust","Ust","USt"},
+            {"just","ust","Ust","Ust","Ust","Ust","Ust"},
+        },
+        {{NULL}}, /* if stays lowercase */
+        {
+            {"fun","UN","UN","UN","UN","UN","UN"},
+            {"fun","Un","UN","UN","UN","UN","UN"},
+            {"fun","Un","Un","Un","UN","UN","UN"},
+            {"fun","Un","Un","Un","Un","Un","UN"},
+            {"fun","un","Un","Un","Un","Un","Un"},
+        },
+        {
+            {"jump","jump","jump","jump","jump","jump","jump"},
+            {"jump","jump","jump","jump","jump","jump","jump"},
+            {"jump","jump","jump","jump","jump","jump","jump"},
+            {"jump","Ump","Ump","Ump","Ump","Ump","UMp"},
+            {"jump","ump","Ump","Ump","Ump","Ump","Ump"},
+        },
+        {{NULL}}, /* of stays lowercase */
+        {{NULL}}, /* off stays lowercase */
+    };
+    for(unsigned w=0;w<sizeof(words)/sizeof(words[0]);w++) for(int gap=60;gap<=180;gap+=30) for(int dwell=50;dwell<=240;dwell+=30) {
+        const char *wanted=expected[w][(gap-60)/30][(dwell-50)/30];
+        reset(); word(words[w],gap,dwell,wanted?wanted:words[w]);
+    }
     printf("%u/%u traces passed\n",cases-failures,cases);
     return failures?1:0;
 }
