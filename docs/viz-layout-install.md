@@ -29,7 +29,7 @@ python3 ~/Projects/glove80-config/scripts/install_viz_layout.py --source ~/Proje
 ```
 
 In Layer Viz, use **Load Layout** and select
-`/home/kdelacruz/Downloads/MoergoLayerViz Layout/V52-Everforest-QWERTY.json`.
+`$HOME/Downloads/MoergoLayerViz Layout/V52-Everforest-QWERTY.json`.
 Do this once even if the app currently points directly into the repo, so PR
 previews use the same stable path. Use **Refresh** after pulling layout changes
 or switching the source (restarting Layer Viz also reloads it).
