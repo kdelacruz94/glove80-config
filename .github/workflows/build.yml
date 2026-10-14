@@ -37,7 +37,8 @@ jobs:
     runs-on: ubuntu-22.04
     container:
       image: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
-    needs: matrix
+    # Semantic and export checks gate the firmware build.
+    needs: [matrix, layout-json]
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
@@ -107,5 +108,6 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, baseline
       - run: python3 scripts/check_layout_json.py
+      - run: python3 scripts/check_keymap_semantics.py
       - run: python3 scripts/check_home_row_shift.py
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'

@@ -397,8 +397,17 @@ After extracting an archive, verify its UF2s with `sha256sum -c SHA256SUMS`.
 To also check metadata, both graphs, and agreement between halves, run
 `python3 scripts/firmware_provenance.py verify <extracted-directory>` from this repo.
 Local checks are `python3 scripts/check_layout_json.py`,
+`python3 scripts/check_keymap_semantics.py`,
 `python3 -m unittest discover -s scripts -p 'test_*.py'`, and `actionlint` when installed.
 The actual firmware acceptance check remains the two CI board builds.
+
+`check_keymap_semantics.py` gates the board builds. It checks what compiling cannot:
+80 bindings per layer, keymap/export binding, combo, macro and custom-section sync,
+one UUID across the export, `glove80.conf` and this README, a keyboard-only way back
+to QWERTY from every persistent mode (and a `&to 0` reset combo covering it), that a
+`&to`-selected base never masks an overlay held from it. Per-key RGB presence is
+checked after each board build by `check_rgb_build.py`. Known failures awaiting a fix are listed in its `PENDING` table
+with the owning card; once a fix lands the entry fails as stale until it is deleted.
 
 ## Two traps worth remembering
 
