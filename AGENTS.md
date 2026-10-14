@@ -93,6 +93,11 @@ check. Before editing source pins or the workflow, read README's "Pinned firmwar
 builds and provenance" and "Two traps worth remembering" sections; imported Zephyr
 needs its own override with MoErgo's imports/exclusions preserved.
 
+Everforest per-key RGB is deferred on the current firmware; read README's
+"Everforest RGB firmware decision" before changing pins or RGB flags.
+`scripts/check_rgb_build.py` validates generated DTS and driver configuration
+after each half builds; source-only RGB presence checks cannot establish support.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
