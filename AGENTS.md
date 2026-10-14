@@ -28,7 +28,13 @@ is position 79. The README and the layout JSON's `notes` field both use that nam
 Edit `config/glove80.keymap` and `layout/<name>.json` in the same commit; they are two
 views of one layout. The JSON round-trips through
 `json.dumps(d, indent=2, ensure_ascii=False)` with no diff churn, so a scripted
-single-index edit stays a single-hunk diff.
+single-index edit stays a single-hunk diff. The JSON's `custom_devicetree` and
+`custom_defined_behaviors` must equal the keymap's matching sections byte for byte.
+
+`scripts/check_keymap_semantics.py` (CI, gates the builds) enforces that sync and
+models layer resolution: recovery to QWERTY, reset-combo coverage, overlay masking.
+Its `PENDING` table holds known findings owned by other cards; a fix that clears one
+fails CI until that entry is deleted.
 
 ## Home-row Shift tuning
 
@@ -67,7 +73,8 @@ newline.
 The editor writes `&magic` for the keymap's `&magic LAYER_Magic 0`, `&reset` for
 `&sys_reset`, and **numeric layer indices** (`&to 17`) where the keymap uses the
 `LAYER_*` macros. The index is the position in `layer_names`. Compare the two
-files through those aliases; a naive string diff reports ~23 false mismatches.
+files through those aliases (`check_keymap_semantics.py` does); a naive string diff
+reports ~23 false mismatches.
 
 ## Chords that need a host-side binding
 
