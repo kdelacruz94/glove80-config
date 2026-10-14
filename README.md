@@ -390,12 +390,32 @@ under [West's import rules](https://docs.zephyrproject.org/latest/develop/west/m
 Dependency upgrades are reviewed manifest edits. CI rejects floating revisions
 throughout the resolved graph and active checkouts that differ from their pins.
 
+The pins were rechecked after the RGB deferral and visualizer changes against
+[main run 38645294885](https://github.com/kdelacruz94/glove80-config/actions/runs/38645294885)
+(config `141c3453385c5e6d4b14ec57d02d50ec2a1ca1df`). These are the existing
+PR #11 pins, retained without a firmware upgrade:
+
+| Input | Full revision | Evidence in the downloaded `firmware` archive |
+|---|---|---|
+| MoErgo ZMK | `ce69e85f585c724142aae37ddf8a7e019ff19e93` | `west-frozen-glove80_lh.yml`, project `zmk` |
+| Raw HID (ovandongen fork) | `35d3b77f2022f774d856450e2951b094a831fb38` | Same manifest, project `zmk-raw-hid` |
+| HID visualizer | `6a28994f93aac00d32200ed975ec441736e7d98f` | Same manifest, project `zmk-hid-viz` |
+| Imported Zephyr | `dacab4875df72109b96cc8977547a0dc04875bcd` | Same manifest, project `zephyr` |
+| `actions/checkout` | `11d5960a326750d5838078e36cf38b85af677262` | `provenance-glove80_lh.json`, `actions` |
+| `actions/upload-artifact` | `ea165f8d65b6e75b540449e92b4886f43607fa02` | Same metadata, `actions` |
+| `actions/download-artifact` | `d3f86a106a0bac45b974a628896c90dbdf5c8093` | Same metadata, `actions` |
+
+The right-half manifest and metadata must report the same revisions. The remaining
+imported projects are frozen in those manifests too. The workflow is maintained
+locally rather than calling a moving reusable workflow; its exact file hash and
+config commit are recorded in each provenance JSON.
+
 `.github/workflows/build.yml` owns the compatible MoErgo build commands at
 `ce69e85f585c724142aae37ddf8a7e019ff19e93`, pins every action to a full SHA,
 and uses the baseline compiler image by digest for matrix parsing and compilation.
 The hosted Ubuntu runner, Docker execution, and artifact service remain external
-infrastructure. These pins establish input identity; byte-identical firmware has
-not been demonstrated. Compare UF2 checksums before claiming reproducibility.
+infrastructure. These pins establish input identity. The comparison below verifies
+byte identity for two tested builds; compare UF2 checksums again after changes.
 
 Each downloaded `firmware` archive includes both board-specific UF2s,
 `SHA256SUMS`, and a `provenance-<board>.json` for each half. Metadata records the
@@ -405,6 +425,31 @@ shield, tool versions, run ID/attempt/URL, source graph hashes, and UF2 checksum
 `west-resolved-<board>.yml` also records pinned optional projects disabled by West's
 group filters. CI compares both graphs and the build identities between halves
 before publishing the final archive; either missing UF2 fails packaging.
+
+Download the combined **`firmware`** artifact for flashing. The per-half artifacts
+are named `artifact-glove80_lh` and `artifact-glove80_rh`; their files also appear
+in the combined archive with these exact names:
+
+| Half | UF2 to flash | Frozen manifest retained alongside it |
+|---|---|---|
+| Left / central | `raw_hid_adapter-glove80_lh-zmk.uf2` | `west-frozen-glove80_lh.yml` |
+| Right / peripheral | `glove80_rh-zmk.uf2` | `west-frozen-glove80_rh.yml` |
+
+The left filename includes the `raw_hid_adapter` shield. Keep that name in hand-test
+instructions; it identifies the central firmware with the visualizer endpoint.
+
+Both halves built successfully in main run `38645294885` and
+[PR #20 run 38643864962](https://github.com/kdelacruz94/glove80-config/actions/runs/38643864962).
+Their firmware inputs and per-half UF2 SHA-256 hashes are identical:
+
+```text
+b94637bb5a115baff4a9545a68b37890bb70d758560fad0a6fb97b79bb7d9eb3  raw_hid_adapter-glove80_lh-zmk.uf2
+5cbd91b3efd2bdf4a103079a2d4d6097378b864f52a260a5e32bd76c28f9099e  glove80_rh-zmk.uf2
+```
+
+This pin/artifact audit changes documentation only and requires no additional
+hardware testing. Existing RGB and visualizer hardware checks remain as documented
+in their sections; matching hashes do not establish those features' behavior.
 
 After extracting an archive, verify its UF2s with `sha256sum -c SHA256SUMS`.
 To also check metadata, both graphs, and agreement between halves, run
