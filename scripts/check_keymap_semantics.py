@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Semantic checks the firmware compiler cannot make: layer shape, export sync,
-UUID agreement, persistent-mode recovery and overlay precedence.
+UUID agreement, persistent-mode recovery, overlay precedence and Magic access.
 
 Per-key RGB presence needs the generated devicetree, so scripts/check_rgb_build.py
 checks it after each board build instead.
@@ -29,13 +29,11 @@ MAX_HELD = 2  # momentary layers held at once while searching for a way out
 
 HOME_ROW = ("LeftPinky", "LeftRingy", "LeftMiddy", "LeftIndex",
             "RightIndex", "RightMiddy", "RightRingy", "RightPinky")
-PENDING = {
-    # Card 2 (precedence): a base numbered above the overlays it inherits masks them.
-    **{f"precedence:{overlay}<Excel": "card 2" for overlay in HOME_ROW},
-    **{f"precedence:{overlay}<Maple": "card 2"
-       for overlay in HOME_ROW[4:] + ("Lower", "System", "Mouse", "Magic")},
-    **{f"precedence:Typing<{base}": "card 2" for base in ("Gaming", "Excel", "Lower", "Maple")},
-}
+# Home-row-mod layers serve QWERTY and sit below every other base by design: over
+# another base the hold still presses its modifier, and the base keeps its own keys
+# (Maple's arrows) instead of the overlay's QWERTY letters. See README "Layer precedence".
+QWERTY_HELPERS = HOME_ROW
+PENDING = {}
 
 
 class Keymap:
@@ -53,9 +51,14 @@ class Keymap:
             name: split_bindings(body)
             for name, body in re.findall(r"layer_(\w+) \{\s*bindings = <(.*?)>;", keymap, re.S)
         }
+        nodes = re.findall(r"(\w+): \w+ \{([^{}]*)\}", text)
         self.hold_mo = {
-            label for label, body in re.findall(r"(\w+): \w+ \{([^{}]*)\}", text)
+            label for label, body in nodes
             if "zmk,behavior-hold-tap" in body and re.search(r"bindings = <&mo>", body)
+        }
+        self.morphs = {  # a mod-morph acts as either of its two bindings
+            label: re.findall(r"<([^<>]*)>", re.search(r"bindings = (.*?);", body, re.S)[1])
+            for label, body in nodes if "zmk,behavior-mod-morph" in body
         }
         self.combos = [
             (set(map(self.layer, self.expand(layers.split()))) if layers else None, binding)
@@ -87,6 +90,8 @@ class Keymap:
             return [(name, first)]
         if name == "lower":  # tap-dance: tap is &mo, double tap is &to
             return [("mo", self.layers["Lower"]), ("to", self.layers["Lower"])]
+        if name in self.morphs and not args:
+            return [a for inner in self.morphs[name] for a in self.actions(inner)]
         if name in self.layers:  # home-row macros hold their own layer
             return [("mo", self.layers[name])]
         if (name in self.hold_mo or name in ("mo", "sl")) and first is not None:
@@ -211,6 +216,8 @@ def check_precedence(km, edges):
         if len(persistent) != 2 or base not in bases:
             continue
         for overlay in sorted(held):
+            if km.names[overlay] in QWERTY_HELPERS:
+                continue
             masked = [p for p in range(POSITIONS) if overlay < base
                       and km.bindings[km.names[overlay]][p] != "&trans"
                       and km.bindings[km.names[base]][p] != "&trans"]
@@ -218,6 +225,40 @@ def check_precedence(km, edges):
                 seen.add((overlay, base))
                 yield (f"precedence:{km.names[overlay]}<{km.names[base]}",
                        f"{km.names[overlay]} held from {km.names[base]} is masked at positions {masked}")
+
+
+def check_magic(km, edges):
+    """Magic must sit above every mode it selects and be reachable from each one."""
+    if "Magic" not in km.layers:
+        return
+    magic = km.layers["Magic"]
+    selected = {layer: kind for b in km.bindings["Magic"]
+                for kind, layer in km.actions(b) if kind in ("to", "tog") and layer != 0}
+    for layer in sorted(selected):
+        if layer > magic:
+            yield f"magic-order:{km.names[layer]}", f"Magic ({magic}) is below {km.names[layer]} ({layer})"
+        if selected[layer] != "to":
+            continue
+        start, seen = (frozenset({0, layer}), frozenset()), set()
+        todo = [start] if start in edges else []
+        while todo:
+            state = todo.pop()
+            if state not in seen:
+                seen.add(state)
+                todo.extend(edges[state])
+        if not any(magic in held and magic == max(p | held) for p, held in seen):
+            yield f"magic-reach:{km.names[layer]}", f"no key sequence from {km.names[layer]} activates Magic"
+
+
+PRECEDENCE_HEADING = "### Layer precedence"
+
+
+def check_precedence_doc(km, readme):
+    """README's precedence table must list the layers in keymap order."""
+    doc = readme.split(PRECEDENCE_HEADING, 1)[-1].split("\n#", 1)[0] if PRECEDENCE_HEADING in readme else ""
+    rows = [(int(i), name) for i, name in re.findall(r"^\| (\d+) \| `(\w+)` \|", doc, re.M)]
+    if rows != list(enumerate(km.names)):
+        yield "precedence-doc", f"README {PRECEDENCE_HEADING!r} table {rows} != keymap order {km.names}"
 
 
 def render(node, layer_names):
@@ -316,15 +357,17 @@ def check_uuid(export, conf, readme):
 def findings(root):
     km = Keymap((root / KEYMAP).read_text(encoding="utf-8"))
     export = json.loads((root / LAYOUT).read_text(encoding="utf-8"))
+    readme = (root / README).read_text(encoding="utf-8")
     yield from check_shape(km, export)
-    yield from check_uuid(export, (root / CONF).read_text(encoding="utf-8"),
-                          (root / README).read_text(encoding="utf-8"))
+    yield from check_uuid(export, (root / CONF).read_text(encoding="utf-8"), readme)
+    yield from check_precedence_doc(km, readme)
     if any(len(b) != POSITIONS for b in km.bindings.values()) or list(km.bindings) != km.names:
         return  # the layer model needs a well-formed keymap
     yield from check_sync(km, export)
     edges = explore(km)
     yield from check_recovery(km, edges)
     yield from check_precedence(km, edges)
+    yield from check_magic(km, edges)
 
 
 def main():

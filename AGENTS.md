@@ -37,6 +37,12 @@ Its `PENDING` table holds known findings owned by other cards; a fix that clears
 fails CI until that entry is deleted. Combo `layers` use the named
 `COMBO_LAYERS_*` groups, not numbers.
 
+Layer index is precedence (higher wins). Before adding or moving a layer, read
+README's "Layer precedence" bands; the checker requires its table to match keymap
+order. Reordering means moving the keymap `layer_*` block and the JSON `layers`
+entry, renumbering the JSON's numeric `&to`/`&tog`/`&sl` params and combo `layers`,
+and any numeric combo lists in the custom DTS.
+
 ## Home-row Shift tuning
 
 Before tuning the active f/j hold-taps (`left_index` / `right_index`), read
