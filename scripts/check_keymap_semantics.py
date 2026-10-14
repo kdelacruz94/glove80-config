@@ -22,7 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 KEYMAP = "config/glove80.keymap"
 LAYOUT = "layout/V52-Everforest-QWERTY.json"
-CONF = "config/glove80.conf"
+CONF = "config/glove80_lh.conf"
 README = "README.md"
 POSITIONS = 80
 MAX_HELD = 2  # momentary layers held at once while searching for a way out

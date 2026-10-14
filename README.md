@@ -342,7 +342,8 @@ which asked the host script to guess which input to move to.
 |---|---|
 | `config/glove80.keymap` | The keymap. **This is the diff surface** — real DTS, diffs line by line. |
 | `layout/*.json` | The Layout Editor export. Feeds [MoergoLayerViz](https://github.com/ovandongen/moergo-layer-viz). |
-| `config/glove80.conf` | Kconfig: pointing, Raw HID, visualizer config ID. |
+| `config/glove80.conf` | Shared Kconfig: pointing. |
+| `config/glove80_lh.conf` | Central-only Kconfig: Raw HID, visualizer config ID. |
 | `config/west.yml` | Firmware source + modules. |
 | `build.yaml` | Board/shield matrix. |
 
@@ -376,7 +377,8 @@ and never edited directly — see the code source-of-truth policy in
    **right**. Unlike the editor's combined download, these are **per-half — do not
    flash the same file to both.**
 
-If you export a new layout (new UUID), update `CONFIG_HID_VIZ_CONFIG_ID` to match.
+If you export a new layout (new UUID), update `CONFIG_HID_VIZ_CONFIG_ID` in
+`config/glove80_lh.conf` to match.
 
 ## Pinned firmware builds and provenance
 
@@ -443,18 +445,66 @@ On-screen layer tracking needs the Raw HID endpoint (usage page `0xFF60`, usage
 central (left) half. Firmware from this repo supports MoergoLayerViz v2.x; editor
 firmware is limited to v1.2.4, which is one-way and cannot track layers.
 
+`config/glove80.conf` keeps pointing enabled on both halves. Raw HID, visualizer
+reporting, and the config ID live in `config/glove80_lh.conf`: Raw HID depends on
+the central role, so assigning these settings on the right half causes Kconfig
+dependency warnings. The pinned firmware loads both the shared and board-specific
+configuration files.
+
 `zmk-raw-hid` is pulled from **ovandongen's fork**, not zzeneg upstream, for a
 static-HID-report-buffer fix that upstream lacks.
 
 ### Point the viz at the repo file, not a Downloads export
 
-MoergoLayerViz reads a layout JSON for its key labels. Point it at **this repo's**
-copy, so it never drifts from what CI flashes:
+MoergoLayerViz reads a layout JSON for its key labels. Select **this repo's**
+copy manually, so it stays aligned with what CI flashes:
 
-- raw URL — `https://raw.githubusercontent.com/kdelacruz94/glove80-config/main/layout/V52-Everforest-QWERTY.json`
-- or the local path — `layout/V52-Everforest-QWERTY.json`
+1. Use the toolbar's **Load layout JSON** button and choose
+   `layout/V52-Everforest-QWERTY.json` from the checkout matching the flashed build.
+   If the app is on another machine, download that JSON from the same commit.
+   The current default-branch copy is available at
+   [this raw URL](https://raw.githubusercontent.com/kdelacruz94/glove80-config/main/layout/V52-Everforest-QWERTY.json).
+   The inspected app opens local files; download the URL before selecting it.
+2. Confirm Glove80 is selected and the expected layer names and key labels appear.
+3. After updating the matching firmware and JSON, use the toolbar's **Refresh**
+   button to reload the file. The app remembers the selected path per keyboard
+   profile; moving the file requires selecting it again.
 
 After a keymap change, refresh it by pushing the `config/glove80.keymap` +
-`layout/*.json` pair (they change in the same commit — see `CLAUDE.md`) and
+`layout/*.json` pair (they change in the same commit — see `AGENTS.md`) and
 reloading the viz. A one-off editor export sitting in `Downloads` is not a source:
 it goes stale the moment the next binding lands.
+
+### Config-ID limitation and host compatibility
+
+The pinned Raw HID module uses **32-byte reports**. The pinned visualizer module's
+legacy `0xFB` query returns a single `0xFA` report with at most 31 ID bytes: this
+layout's 36-character UUID becomes `15da8b74-bc9e-47fe-8334-34ea6d2`.
+That is not the full layout ID. Keep the full UUID in the config; shortening it
+would lose its correspondence with the editor export.
+
+The same pinned firmware already supports full IDs through `0xF9` manifest queries
+and `0xF8` continuation reports, with a six-byte header and 26-byte chunks at the
+existing report size ([legacy response](https://github.com/ovandongen/zmk-hid-viz/blob/6a28994f93aac00d32200ed975ec441736e7d98f/src/command_handler.c#L65),
+[manifest framing](https://github.com/ovandongen/zmk-hid-viz/blob/6a28994f93aac00d32200ed975ec441736e7d98f/src/capabilities.h#L90)).
+`HID_VIZ_MANIFEST` defaults to enabled when visualizer reporting is enabled.
+
+Host source checked on 2026-10-13: MoergoLayerViz at
+`5e5b7911f8676525674a2d6a49f2b3df9abff60b`, with its protocol submodule at
+`c63590c54329a9d4a5cde380d4cfb757d42eefd0`, has no manifest query or continuation
+parser. Its [protocol constants](https://github.com/ovandongen/zmk-hid-protocol/blob/c63590c54329a9d4a5cde380d4cfb757d42eefd0/src/ZmkHidProtocol/Protocol/HidConstants.cs)
+fix reports at 32 bytes and support the legacy ID query; the app exposes that
+query only in its [diagnostic plumbing](https://github.com/ovandongen/moergo-layer-viz/blob/5e5b7911f8676525674a2d6a49f2b3df9abff60b/src/MoergoLayerViz.App/ViewModels/MainWindowViewModel.cs#L734).
+The Settings [Testing tab is hidden](https://github.com/ovandongen/moergo-layer-viz/blob/5e5b7911f8676525674a2d6a49f2b3df9abff60b/src/MoergoLayerViz.App/Views/SettingsWindow.axaml#L484)
+in that source (`IsVisible="False"`), so a normal build need not expose the query.
+Layout loading uses a local file picker and a saved path, with no UUID-based
+automatic matching ([file picker](https://github.com/ovandongen/moergo-layer-viz/blob/5e5b7911f8676525674a2d6a49f2b3df9abff60b/src/MoergoLayerViz.App/App.axaml.cs#L194)).
+
+Full-ID retrieval and matching-layout selection are therefore **unresolved host
+integration work**. A future host implementation could consume the existing
+manifest chunks without enlarging reports. This config preserves the HID report
+size, usage IDs, UUID, dependency pins, and wire protocol. Source inspection and
+CI builds do not verify USB behavior: after flashing both matching UF2s, check
+manual loading, live layer/key tracking on each hand, the saved path after an app
+restart, and, if diagnostics are exposed, the truncated config ID. No end-to-end automatic selection or
+hardware test has been performed for this change.

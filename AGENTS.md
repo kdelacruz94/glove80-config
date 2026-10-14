@@ -105,6 +105,10 @@ Everforest per-key RGB is deferred on the current firmware; read README's
 `scripts/check_rgb_build.py` validates generated DTS and driver configuration
 after each half builds; source-only RGB presence checks cannot establish support.
 
+Raw HID / visualizer settings belong in `config/glove80_lh.conf` (central only).
+Read README's "Config-ID limitation and host compatibility" before changing IDs
+or report sizing; the host currently requires manual layout JSON selection.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
