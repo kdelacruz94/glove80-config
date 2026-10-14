@@ -21,6 +21,17 @@ Excel_Code, Excel_TBD) for Office/dev contexts, and a **Gaming** family (Gaming/
 Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persistent
 `&to`, using the same mechanism Engrammer uses for base-alphabet switching.
 
+Only Excel, Gaming/WoW and Maple are selectable today. Excel_WordPP, Excel_Code,
+Excel_TBD, LoL and Gaming_TBD are still all-`&none` placeholders, so their Magic
+selectors are `&none` until each layer gets bindings; the layers stay in place so
+layer numbers do not shift. Restore the selector in the same change that fills the
+layer.
+
+**Emergency return to QWERTY:** press the three upper thumb keys of either hand
+together (T1+T2+T3) to run `&to 0` from any layer, 0-30. In Maple this is the
+only keyboard-alone escape: Maple sits above Magic, so the Magic key cannot reach
+Magic's QWERTY key there.
+
 ### Everforest RGB firmware decision
 
 The retained Everforest layer/modifier color block is **not active** on the pinned
