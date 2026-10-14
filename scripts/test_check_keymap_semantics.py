@@ -88,8 +88,8 @@ class RepoTests(unittest.TestCase):
     def test_current_config_passes_with_pending_findings(self):
         result = self.check()
         self.assertEqual(result.returncode, 0, result.stderr)
-        for key in ["recovery:LoL", "reset-combo:Gaming_TBD", "precedence:Magic<Maple"]:
-            self.assertIn(key, result.stdout)
+        self.assertIn("precedence:Magic<Maple", result.stdout)
+        self.assertNotIn("recovery:", result.stdout)
 
     def test_layer_with_79_bindings_fails(self):
         def drop(root):
@@ -115,20 +115,15 @@ class RepoTests(unittest.TestCase):
     def test_mode_dropped_from_reset_combos_fails(self):
         def drop(root):
             for _ in range(4):  # both Typing access combos and both reset combos
-                self.edit_keymap(root, "23 24 25 26>", "23 25 26>")
+                self.edit_keymap(root, "22 23 24 25 26", "22 23 25 26")
         result = self.check(drop)
         self.assertFails(result, "reset-combo:Maple")
         self.assertIn("recovery:Maple", result.stderr)
 
-    def test_lockout_fix_retires_pending_entries(self):
-        def fix(root):
-            for _ in range(2):  # the two `&to 0` reset combos
-                self.edit_keymap(root, "&to 0>;\n    layers = <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 "
-                                 "18 19 20 21 22 23 24 25 26>", "&to 0>;\n    layers = <0 1 2 3 4 5 6 7 8 9 "
-                                 "10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29>")
-        result = self.check(fix)
-        self.assertFails(result, "recovery:LoL: fixed; delete its PENDING entry (card 1)")
-        self.assertIn("reset-combo:Excel_TBD: fixed", result.stderr)
+    def test_reselecting_placeholder_locks_out(self):
+        def select(root):
+            self.edit_keymap(root, "&to LAYER_Maple         &none", "&to LAYER_Maple         &to LAYER_LoL")
+        self.assertFails(self.check(select), "FAIL precedence:Magic<LoL")
 
 
 if __name__ == "__main__":

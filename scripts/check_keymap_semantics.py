@@ -29,17 +29,12 @@ MAX_HELD = 2  # momentary layers held at once while searching for a way out
 
 HOME_ROW = ("LeftPinky", "LeftRingy", "LeftMiddy", "LeftIndex",
             "RightIndex", "RightMiddy", "RightRingy", "RightPinky")
-PLACEHOLDERS = ("Excel_TBD", "LoL", "Gaming_TBD")
 PENDING = {
-    # Card 1 (lockout): placeholder modes mask Magic and the reset combos skip them.
-    **{f"{check}:{mode}": "card 1" for check in ("recovery", "reset-combo") for mode in PLACEHOLDERS},
     # Card 2 (precedence): a base numbered above the overlays it inherits masks them.
     **{f"precedence:{overlay}<Excel": "card 2" for overlay in HOME_ROW},
     **{f"precedence:{overlay}<Maple": "card 2"
        for overlay in HOME_ROW[4:] + ("Lower", "System", "Mouse", "Magic")},
-    **{f"precedence:Magic<{base}": "card 2" for base in ("Excel_WordPP", "Excel_Code") + PLACEHOLDERS},
-    **{f"precedence:Typing<{base}": "card 2"
-       for base in ("Gaming", "Excel", "Lower", "Maple", "Excel_WordPP", "Excel_Code")},
+    **{f"precedence:Typing<{base}": "card 2" for base in ("Gaming", "Excel", "Lower", "Maple")},
 }
 
 
