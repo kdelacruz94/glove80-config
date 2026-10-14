@@ -919,7 +919,7 @@
         "decoration": {
           "icon": "fa-terminal",
           "background": "#7fbbb3ff",
-          "description": "Hold for Terminal layer (herdr left, emulator chords right). Tap for sticky one-shot right shift."
+          "description": "Hold 200 ms for Terminal (herdr left, emulator chords right); other right-hand keys may be suppressed. Tap for sticky one-shot Right Shift. Same-hand keys outside the emulator set force Shift only if released before 200 ms. Repeat press within 300 ms forces tap. For ordinary held Shift use left C6R5 (position 46). See README for macro focus, composer, and host-version prerequisites and hardware checks."
         }
       },
       {
