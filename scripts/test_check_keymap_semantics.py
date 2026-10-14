@@ -25,7 +25,8 @@ def tiny_keymap(*layers):
 
 def model(km):
     edges = semantics.explore(km)
-    return dict(semantics.check_recovery(km, edges)) | dict(semantics.check_precedence(km, edges))
+    return (dict(semantics.check_recovery(km, edges)) | dict(semantics.check_precedence(km, edges))
+            | dict(semantics.check_magic(km, edges)))
 
 
 class ModelTests(unittest.TestCase):
@@ -47,6 +48,33 @@ class ModelTests(unittest.TestCase):
         self.assertNotIn("precedence:Over<Mode", found)
         self.assertNotIn("recovery:Mode", found)
         self.assertIn("reset-combo:Mode", found)  # no `&to 0` combo in this keymap
+
+    def test_magic_below_a_mode_it_selects_fails(self):
+        km = tiny_keymap(("QWERTY", {0: "&mo 1"}), ("Magic", {1: "&to 2", 2: "&to 0"}),
+                         ("Mode", {0: "&mo 1"}))
+        found = model(km)
+        self.assertIn("magic-order:Mode", found)
+        self.assertIn("magic-reach:Mode", found)
+        self.assertIn("precedence:Magic<Mode", found)
+
+    def test_magic_above_its_modes_passes(self):
+        km = tiny_keymap(("QWERTY", {0: "&mo 2"}), ("Mode", {0: "&mo 2"}),
+                         ("Magic", {1: "&to 1", 2: "&to 0"}))
+        self.assertEqual(model(km), {"reset-combo:Mode": "no `&to 0` emergency combo covers this mode"})
+
+    def test_home_row_helper_may_be_masked_by_a_base(self):
+        km = tiny_keymap(("QWERTY", {0: "&mo 3"}), ("RightIndex", {1: "&kp A"}),
+                         ("Mode", {0: "&mo 1", 1: "&kp B", 2: "&mo 3"}), ("Magic", {1: "&to 2", 2: "&to 0"}))
+        found = model(km)
+        self.assertNotIn("precedence:RightIndex<Mode", found)
+        self.assertNotIn("magic-order:Mode", found)
+
+    def test_mod_morph_reaches_both_bindings(self):
+        km = semantics.Keymap(
+            "#define LAYER_Base 0\n#define LAYER_Over 1\n"
+            'ws: ws { compatible = "zmk,behavior-mod-morph"; bindings = <&mo LAYER_Over>, <&kp SPACE>; };\n'
+            "/* Automatically generated keymap */\n")
+        self.assertEqual(km.actions("&ws"), [("mo", 1)])
 
 
 class RepoTests(unittest.TestCase):
@@ -85,11 +113,10 @@ class RepoTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertIn(message, result.stderr)
 
-    def test_current_config_passes_with_pending_findings(self):
+    def test_current_config_passes_with_no_pending_findings(self):
         result = self.check()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("precedence:Magic<Maple", result.stdout)
-        self.assertNotIn("recovery:", result.stdout)
+        self.assertNotIn("pending (", result.stdout)
 
     def test_layer_with_79_bindings_fails(self):
         def drop(root):
@@ -114,16 +141,29 @@ class RepoTests(unittest.TestCase):
 
     def test_mode_dropped_from_reset_combos_fails(self):
         def drop(root):
-            # the reset group builds on this one, so Maple leaves both reset combos
-            self.edit_keymap(root, "LAYER_Maple LAYER_Excel_WordPP", "LAYER_Excel_WordPP")
-        result = self.check(drop)
-        self.assertFails(result, "reset-combo:Maple")
-        self.assertIn("recovery:Maple", result.stderr)
+            # one group feeds both reset combos
+            self.edit_keymap(root, "LAYER_Gaming LAYER_Maple", "LAYER_Gaming")
+        self.assertFails(self.check(drop), "reset-combo:Maple")
 
-    def test_reselecting_placeholder_locks_out(self):
+    def test_typing_access_widened_to_a_base_fails(self):
+        def widen(root):
+            self.edit_keymap(root, "COMBO_LAYERS_TYPING_ACCESS LAYER_QWERTY LAYER_Typing",
+                             "COMBO_LAYERS_TYPING_ACCESS LAYER_QWERTY LAYER_Typing LAYER_Maple")
+        self.assertFails(self.check(widen), "FAIL precedence:Typing<Maple")
+
+    def test_reselecting_placeholder_keeps_magic_reachable(self):
         def select(root):
-            self.edit_keymap(root, "&to LAYER_Maple         &none", "&to LAYER_Maple         &to LAYER_LoL")
-        self.assertFails(self.check(select), "FAIL precedence:Magic<LoL")
+            self.edit(root, semantics.KEYMAP, "&to LAYER_Maple         &none",
+                      "&to LAYER_Maple         &to LAYER_LoL")
+            self.edit_export(root, lambda d: d["layers"][d["layer_names"].index("Magic")][24].update(
+                value="&to", params=[{"value": d["layer_names"].index("LoL")}]))
+        result = self.check(select)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_precedence_table_drift_fails(self):
+        def drift(root):
+            self.edit(root, semantics.README, "| 11 | `Maple` |", "| 11 | `Mapel` |")
+        self.assertFails(self.check(drift), "precedence-doc")
 
 
 if __name__ == "__main__":

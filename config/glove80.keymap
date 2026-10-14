@@ -72,25 +72,25 @@
 #define LAYER_RightRingy 8
 #define LAYER_RightPinky 9
 #define LAYER_Gaming 10
-#define LAYER_Cursor 11
-#define LAYER_Number 12
-#define LAYER_Function 13
-#define LAYER_Symbol 14
-#define LAYER_Mouse 15
-#define LAYER_System 16
-#define LAYER_Excel 17
-#define LAYER_Factory 18
-#define LAYER_Lower 19
-#define LAYER_Mouse_slow 20
-#define LAYER_Mouse_fast 21
-#define LAYER_Mouse_warp 22
-#define LAYER_Magic 23
-#define LAYER_Maple 24
-#define LAYER_Excel_WordPP 25
-#define LAYER_Excel_Code 26
-#define LAYER_Excel_TBD 27
-#define LAYER_LoL 28
-#define LAYER_Gaming_TBD 29
+#define LAYER_Maple 11
+#define LAYER_LoL 12
+#define LAYER_Gaming_TBD 13
+#define LAYER_Excel_WordPP 14
+#define LAYER_Excel_Code 15
+#define LAYER_Excel_TBD 16
+#define LAYER_Cursor 17
+#define LAYER_Number 18
+#define LAYER_Function 19
+#define LAYER_Symbol 20
+#define LAYER_Mouse 21
+#define LAYER_System 22
+#define LAYER_Excel 23
+#define LAYER_Factory 24
+#define LAYER_Lower 25
+#define LAYER_Mouse_slow 26
+#define LAYER_Mouse_fast 27
+#define LAYER_Mouse_warp 28
+#define LAYER_Magic 29
 #define LAYER_Terminal 30
 
 /* To deal with the situation where there is no Lower layer, to keep &lower happy */
@@ -1067,16 +1067,16 @@ combos {
   #define COMBO_LAYERS_THROUGH_LEFT_MIDDY \
     LAYER_QWERTY LAYER_Typing LAYER_LeftPinky LAYER_LeftRingy LAYER_LeftMiddy
   #define COMBO_LAYERS_THROUGH_LEFT_INDEX COMBO_LAYERS_THROUGH_LEFT_MIDDY LAYER_LeftIndex
-  #define COMBO_LAYERS_THROUGH_EXCEL_CODE \
+  #define COMBO_LAYERS_TYPING_ACCESS LAYER_QWERTY LAYER_Typing
+  #define COMBO_LAYERS_ALL \
     LAYER_QWERTY LAYER_Typing LAYER_LeftPinky LAYER_LeftRingy \
     LAYER_LeftMiddy LAYER_LeftIndex LAYER_RightIndex LAYER_RightMiddy \
-    LAYER_RightRingy LAYER_RightPinky LAYER_Gaming LAYER_Cursor \
-    LAYER_Number LAYER_Function LAYER_Symbol LAYER_Mouse \
-    LAYER_System LAYER_Excel LAYER_Factory LAYER_Lower \
-    LAYER_Mouse_slow LAYER_Mouse_fast LAYER_Mouse_warp LAYER_Magic \
-    LAYER_Maple LAYER_Excel_WordPP LAYER_Excel_Code
-  #define COMBO_LAYERS_ALL COMBO_LAYERS_THROUGH_EXCEL_CODE \
-    LAYER_Excel_TBD LAYER_LoL LAYER_Gaming_TBD LAYER_Terminal
+    LAYER_RightRingy LAYER_RightPinky LAYER_Gaming LAYER_Maple \
+    LAYER_LoL LAYER_Gaming_TBD LAYER_Excel_WordPP LAYER_Excel_Code \
+    LAYER_Excel_TBD LAYER_Cursor LAYER_Number LAYER_Function \
+    LAYER_Symbol LAYER_Mouse LAYER_System LAYER_Excel \
+    LAYER_Factory LAYER_Lower LAYER_Mouse_slow LAYER_Mouse_fast \
+    LAYER_Mouse_warp LAYER_Magic LAYER_Terminal
   #define COMBO_LAYERS_BASE_RESET COMBO_LAYERS_ALL
 
   // T2+T3
@@ -1215,14 +1215,14 @@ combos {
     timeout-ms = <COMBO_FIRING_DECAY>;
     key-positions = <POS_LH_T5 POS_LH_T6>;
     bindings = <&mo LAYER_Typing>;
-    layers = <COMBO_LAYERS_THROUGH_EXCEL_CODE>;
+    layers = <COMBO_LAYERS_TYPING_ACCESS>;
   };
 
   combo_typing_layer_access_right {
     timeout-ms = <COMBO_FIRING_DECAY>;
     key-positions = <POS_RH_T5 POS_RH_T6>;
     bindings = <&mo LAYER_Typing>;
-    layers = <COMBO_LAYERS_THROUGH_EXCEL_CODE>;
+    layers = <COMBO_LAYERS_TYPING_ACCESS>;
   };
   #endif
 
@@ -10618,6 +10618,72 @@ macros {
             >;
         };
 
+        layer_Maple {
+            bindings = <
+                      &kp ESC  &kp N6    &kp N7    &kp N8     &kp N9                                                                                                                                            &none                          &none                          &none                             &none                         &none
+                    &kp EQUAL  &kp N1    &kp N2    &kp N3     &kp N4  &kp N5                                                                                                    &kp N6                         &kp N7                         &kp N8                         &kp N9                            &kp N0                         &none
+                        &kp P   &kp D     &kp A    &kp UP      &kp R   &kp Q                                                                                                     &kp Y                          &kp U                          &kp I                          &kp O                             &kp P                     &kp MINUS
+                      &kp TAB   &kp F  &kp LEFT  &kp DOWN  &kp RIGHT   &kp W                                                                                                     &kp H  &RightIndex (J, LAYER_QWERTY)  &RightMiddy (K, LAYER_QWERTY)  &RightRingy (L, LAYER_QWERTY)  &RightPinky (SEMI, LAYER_QWERTY)                       &kp SQT
+ &sticky_key_modtap LSFT LSFT   &kp G     &kp S     &kp C      &kp T   &kp E  &kp PG_DN  &kp LSHFT    &kp Y    &thums_up  &thumb LAYER_Lower INSERT  &thumb LAYER_System ENTER   &kp N                          &kp M                      &kp COMMA                        &kp DOT                          &kp FSLH  &sticky_key_modtap RSFT RSFT
+                      &kp END   &kp X     &kp I     &kp K      &kp Y           &kp LALT  &kp LCTRL  &kp RET  &thums_down     &thumb LAYER_Mouse TAB  &win_space                                             &kp RSHFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_LoL {
+            bindings = <
+  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_Gaming_TBD {
+            bindings = <
+  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_Excel_WordPP {
+            bindings = <
+  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_Excel_Code {
+            bindings = <
+  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
+        layer_Excel_TBD {
+            bindings = <
+  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
+  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
+            >;
+        };
+
         layer_Cursor {
             bindings = <
      &none               &none               &none               &none               &none                                                                                                             &none           &none           &none      &none      &none
@@ -10758,72 +10824,6 @@ macros {
       &bootloader         &rgb_ug RGB_SPD       &rgb_ug RGB_SAD       &rgb_ug RGB_HUD  &rgb_ug RGB_BRD  &rgb_ug RGB_EFF                                                               &none   &none   &none   &none         &none     &bootloader
        &sys_reset                   &none                 &none                 &none            &none            &none   &bt_2   &bt_3  &tog LAYER_Factory   &none   &none   &none   &none   &none   &none   &none         &none      &sys_reset
             &none            &out OUT_TOG                 &none                 &none            &none                    &bt_0   &bt_1        &out OUT_USB   &none   &none   &none           &none   &none   &none  &out OUT_TOG           &none
-            >;
-        };
-
-        layer_Maple {
-            bindings = <
-                      &kp ESC  &kp N6    &kp N7    &kp N8     &kp N9                                                                                                                                            &none                          &none                          &none                             &none                         &none
-                    &kp EQUAL  &kp N1    &kp N2    &kp N3     &kp N4  &kp N5                                                                                                    &kp N6                         &kp N7                         &kp N8                         &kp N9                            &kp N0                         &none
-                        &kp P   &kp D     &kp A    &kp UP      &kp R   &kp Q                                                                                                     &kp Y                          &kp U                          &kp I                          &kp O                             &kp P                     &kp MINUS
-                      &kp TAB   &kp F  &kp LEFT  &kp DOWN  &kp RIGHT   &kp W                                                                                                     &kp H  &RightIndex (J, LAYER_QWERTY)  &RightMiddy (K, LAYER_QWERTY)  &RightRingy (L, LAYER_QWERTY)  &RightPinky (SEMI, LAYER_QWERTY)                       &kp SQT
- &sticky_key_modtap LSFT LSFT   &kp G     &kp S     &kp C      &kp T   &kp E  &kp PG_DN  &kp LSHFT    &kp Y    &thums_up  &thumb LAYER_Lower INSERT  &thumb LAYER_System ENTER   &kp N                          &kp M                      &kp COMMA                        &kp DOT                          &kp FSLH  &sticky_key_modtap RSFT RSFT
-                      &kp END   &kp X     &kp I     &kp K      &kp Y           &kp LALT  &kp LCTRL  &kp RET  &thums_down     &thumb LAYER_Mouse TAB  &win_space                                             &kp RSHFT                       &kp LBKT                       &kp RBKT                         &kp GRAVE          &magic LAYER_Magic 0
-            >;
-        };
-
-        layer_Excel_WordPP {
-            bindings = <
-  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
-            >;
-        };
-
-        layer_Excel_Code {
-            bindings = <
-  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
-            >;
-        };
-
-        layer_Excel_TBD {
-            bindings = <
-  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
-            >;
-        };
-
-        layer_LoL {
-            bindings = <
-  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
-            >;
-        };
-
-        layer_Gaming_TBD {
-            bindings = <
-  &none   &none   &none   &none   &none                                                                   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none                                                   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none   &none                 &none
-  &none   &none   &none   &none   &none           &none   &none   &none   &none   &none   &none           &none   &none   &none   &none  &magic LAYER_Magic 0
             >;
         };
 

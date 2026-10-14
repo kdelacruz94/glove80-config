@@ -28,9 +28,61 @@ layer numbers do not shift. Restore the selector in the same change that fills t
 layer.
 
 **Emergency return to QWERTY:** press the three upper thumb keys of either hand
-together (T1+T2+T3) to run `&to 0` from any layer, 0-30. In Maple this is the
-only keyboard-alone escape: Maple sits above Magic, so the Magic key cannot reach
-Magic's QWERTY key there.
+together (T1+T2+T3) to run `&to 0` from any layer, 0-30.
+
+### Layer precedence
+
+ZMK resolves a key on the **highest-numbered active layer** whose binding is not
+`&trans`, so a layer's index decides what it masks. The order is banded:
+
+1. **QWERTY and its helpers** (0-9). Typing and the home-row-mod layers serve
+   QWERTY only. Over any other base a home-row hold still presses its modifier, but
+   the base keeps its own keys (Maple's arrows stay arrows under a held J).
+2. **Persistent bases** (10-16), selected from Magic with `&to`. Each sits below
+   every overlay it can hold.
+3. **Thumb overlays and toggled modes** (17-28), held or toggled on top of a base.
+4. **Magic** (29), above every mode it selects, so its selectors always resolve.
+5. **Terminal** (30), held from QWERTY only.
+
+| Index | Layer | Role |
+|---|---|---|
+| 0 | `QWERTY` | default base |
+| 1 | `Typing` | QWERTY-only: plain home row and thumbs; T5+T6 holds it, RH C1R5+C2R6 toggles it |
+| 2 | `LeftPinky` | home-row-mod helper |
+| 3 | `LeftRingy` | home-row-mod helper |
+| 4 | `LeftMiddy` | home-row-mod helper |
+| 5 | `LeftIndex` | home-row-mod helper |
+| 6 | `RightIndex` | home-row-mod helper |
+| 7 | `RightMiddy` | home-row-mod helper |
+| 8 | `RightRingy` | home-row-mod helper |
+| 9 | `RightPinky` | home-row-mod helper |
+| 10 | `Gaming` | base (WoW); Magic on position 63 |
+| 11 | `Maple` | base; Lower, System, Mouse and Symbol thumbs, Magic on 79 |
+| 12 | `LoL` | placeholder base |
+| 13 | `Gaming_TBD` | placeholder base |
+| 14 | `Excel_WordPP` | placeholder base |
+| 15 | `Excel_Code` | placeholder base |
+| 16 | `Excel_TBD` | placeholder base |
+| 17 | `Cursor` | thumb overlay |
+| 18 | `Number` | thumb overlay |
+| 19 | `Function` | thumb overlay |
+| 20 | `Symbol` | thumb overlay |
+| 21 | `Mouse` | thumb overlay |
+| 22 | `System` | thumb overlay |
+| 23 | `Excel` | thumb overlay and base; positions 46 and 68 toggle it off |
+| 24 | `Factory` | MoErgo factory layout, toggled from Magic |
+| 25 | `Lower` | thumb overlay; double tap locks it from Factory |
+| 26 | `Mouse_slow` | held from Mouse |
+| 27 | `Mouse_fast` | held from Mouse |
+| 28 | `Mouse_warp` | held from Mouse |
+| 29 | `Magic` | mode selector, held on 64/79 |
+| 30 | `Terminal` | held from QWERTY position 75 |
+
+Excel's own keys cover both Magic positions, so from Excel switch modes in two
+steps: tap 46 or 68 to toggle Excel off, then hold Magic. Typing is restricted to
+QWERTY by design: its T5+T6 hold combo fires only on QWERTY and Typing, so on other
+layers those two thumbs type their own keys. `scripts/check_keymap_semantics.py`
+keeps this table in keymap order and checks the rules above.
 
 ### Everforest RGB firmware decision
 
@@ -463,7 +515,9 @@ The actual firmware acceptance check remains the two CI board builds.
 80 bindings per layer, keymap/export binding, combo, macro and custom-section sync,
 one UUID across the export, `glove80.conf` and this README, a keyboard-only way back
 to QWERTY from every persistent mode (and a `&to 0` reset combo covering it), that a
-`&to`-selected base never masks an overlay held from it. Per-key RGB presence is
+`&to`-selected base never masks an overlay held from it (home-row helpers excepted by
+design), that Magic sits above and is reachable from every mode it selects, and that
+the "Layer precedence" table matches keymap order. Per-key RGB presence is
 checked after each board build by `check_rgb_build.py`. Known failures awaiting a fix are listed in its `PENDING` table
 with the owning card; once a fix lands the entry fails as stale until it is deleted.
 
