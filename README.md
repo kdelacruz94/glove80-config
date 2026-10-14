@@ -147,8 +147,71 @@ slash-command keys removed).
 Left C4R1 / C3R1 (base positions 2, 3) stay `&none`, reserved for PIP/PBP. System-layer
 app keys are deferred.
 
-The hold resolves on the left hand plus the ten emulator positions (28-32, 40-44), so
-Right Shift still shifts every other right-hand key.
+#### Thumb timing and Shift
+
+The former AI thumb uses a balanced hold-tap: a 200 ms hold selects Terminal;
+the tap sends sticky one-shot Right Shift (expires after 500 ms unused).
+The positional trigger list is the left hand plus the ten emulator positions
+(28-32, 40-44). With `hold-trigger-on-release`, a right-hand key outside that
+list must **release before the 200 ms timer** to force the Shift tap. The list
+does not prevent a standalone long hold from activating Terminal. Once Terminal
+is active, its `&none` keys swallow presses instead of producing shifted letters
+(for example, N at position 58). Even a same-hand key pressed before the timer
+can be swallowed if it remains held across the timer.
+
+For ordinary held Shift, use the dedicated left C6R5 key (position 46): tap for
+sticky one-shot Left Shift, hold at least 200 ms for traditional Left Shift.
+It has no layer action. The f/j home-row Shifts are another option; their
+150 ms timer and prior-idle requirements are described [above](#home-row-shift-fj).
+
+These are expected outcomes from the configured behavior and pinned hold-tap
+implementation; physical keyboard confirmation is still required. Start each
+isolated test on QWERTY with no modifiers held and at least 300 ms since the
+previous thumb press (except the rapid-repeat test).
+
+| Gesture | Expected outcome |
+|---|---|
+| Tap position 75, release before 200 ms, then tap N within 500 ms | One-shot Shift produces `N`; the following N is lowercase. Terminal stays inactive. |
+| Fast same-hand chord: hold 75, press and release N, then release 75, all before 200 ms | Produces `N` via the Shift tap; Terminal stays inactive. This guarantee excludes the ten emulator positions. |
+| Long hold: hold 75 alone past 200 ms, then press N | Terminal activates; N is `&none` and produces nothing. Release 75, then N works normally. A mapped Terminal key sends its documented chord instead. |
+| Rapid tap-then-hold: tap 75, press it again within 300 ms of the first **press**, and hold past 200 ms | The 300 ms `quick-tap-ms` guard forces the second gesture to the Shift tap action; Terminal stays inactive. Waiting more than 300 ms before pressing again permits the normal long hold. |
+
+#### Macro prerequisites
+
+These macros send keystrokes to the focused host application; they cannot check
+focus, detect a composer, or wait for the host to become ready. Before using
+them, focus the intended terminal and herdr instance with the matching
+[terminal-config chord contract](https://github.com/kdelacruz94/terminal-config/blob/main/docs/glove80-terminal-layer-chords.md)
+loaded (`ctrl+b` prefix and the configured actions). Prefix and action are
+separate taps, with fixed 15 ms tap/wait timing. Release other modifiers and
+consume or let any sticky Shift expire first; extra modifiers can change the
+chords. Use a disposable pane for checks, especially close-tab and clear-screen.
+
+The right-hand chords require the matching WezTerm or kitty configuration.
+Copy needs a selection; paste needs the intended clipboard content and a
+focused composer ready to accept it. Dialogs, search/picker modes, completion
+menus, or a running command can interpret input differently. This layer no
+longer sends Claude Code slash commands, so it has no Claude Code/Codex
+composer-version requirement. No minimum supported herdr, WezTerm, or kitty
+version or hardware-tested version matrix is recorded here: compatibility is
+conditional on the installed host versions supporting the contract's actions.
+Record the OS, terminal, herdr, and composer versions during the hand test;
+a green firmware build does not verify host compatibility.
+
+#### Captain hardware hand test
+
+- [ ] Tap: verify one-shot `N`, then lowercase `n`, and unused Shift expiry.
+- [ ] Fast same-hand chord: verify `N` with N released before 200 ms; also
+      hold N across the timer and confirm the documented suppression.
+- [ ] Long hold: verify Terminal activates after 200 ms, N is suppressed,
+      a mapped chord fires, and releasing 75 restores QWERTY typing.
+- [ ] Rapid tap-then-hold: verify no Terminal activation within the 300 ms
+      quick-tap window, then normal activation after waiting beyond it.
+- [ ] Dedicated left Shift: verify its sticky tap and traditional held Shift
+      without a layer change; check f/j separately using the tests above.
+- [ ] Record host versions and confirm focus, selection/clipboard, composer
+      readiness, modifier state, and representative herdr/emulator actions
+      against the installed chord contract.
 
 ### Base-layer first row (positions 0–4)
 

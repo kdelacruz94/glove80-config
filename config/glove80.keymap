@@ -10160,8 +10160,12 @@ macros {
 //
 // The ten right-hand positions the emulator chords occupy: Y U I O P on the E
 // row and H J K L SEMI on the home row. Only these are added to the trigger's
-// hold-trigger-key-positions -- every other right-hand key still resolves the
-// trigger as a tap, so Right Shift keeps shifting them.
+// hold-trigger-key-positions. Other right-hand keys force the Shift tap only
+// when released before the 200 ms timer. A standalone hold, or a same-hand key
+// held across that timer, activates Terminal; its &none keys swallow presses.
+// A repeat press within 300 ms of the previous press forces the tap action.
+// For ordinary held Shift use the dedicated left C6R5 key (position 46).
+// README's Terminal section lists expected gestures and hardware hand tests.
 //
 #define TERM_RIGHT_HAND_KEYS 28 29 30 31 32 40 41 42 43 44
 
@@ -10189,6 +10193,8 @@ macros {
     //
     // herdr actions. The prefix is ctrl+b, sent and released before the action
     // key -- never chorded with it -- so each macro is two taps.
+    // Requires the intended terminal/herdr focus and matching host bindings.
+    // No focus/composer/version detection: see README's macro prerequisites.
     //
     ZMK_MACRO(term_herdr_tab_prev,
       wait-ms = <15>;
