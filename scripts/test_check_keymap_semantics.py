@@ -114,8 +114,8 @@ class RepoTests(unittest.TestCase):
 
     def test_mode_dropped_from_reset_combos_fails(self):
         def drop(root):
-            for _ in range(4):  # both Typing access combos and both reset combos
-                self.edit_keymap(root, "22 23 24 25 26", "22 23 25 26")
+            # the reset group builds on this one, so Maple leaves both reset combos
+            self.edit_keymap(root, "LAYER_Maple LAYER_Excel_WordPP", "LAYER_Excel_WordPP")
         result = self.check(drop)
         self.assertFails(result, "reset-combo:Maple")
         self.assertIn("recovery:Maple", result.stderr)

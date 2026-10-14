@@ -34,7 +34,8 @@ single-index edit stays a single-hunk diff. The JSON's `custom_devicetree` and
 `scripts/check_keymap_semantics.py` (CI, gates the builds) enforces that sync and
 models layer resolution: recovery to QWERTY, reset-combo coverage, overlay masking.
 Its `PENDING` table holds known findings owned by other cards; a fix that clears one
-fails CI until that entry is deleted.
+fails CI until that entry is deleted. Combo `layers` use the named
+`COMBO_LAYERS_*` groups, not numbers.
 
 ## Home-row Shift tuning
 
