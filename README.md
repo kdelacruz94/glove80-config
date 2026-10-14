@@ -13,13 +13,51 @@ firmware can carry things the Layout Editor cannot express.
 |---|---|
 | Layers | 31 |
 | Base | QWERTY (alternate alphabets, macOS, World, emoji all removed) |
-| Colors | Everforest Dark Hard |
+| Colors | Everforest Dark Hard palette; per-key RGB unsupported by current firmware |
 | Editor UUID | `15da8b74-bc9e-47fe-8334-34ea6d2318dc` |
 
 Layer families beyond stock Engrammer: an **Excel** family (Excel, Excel_WordPP,
 Excel_Code, Excel_TBD) for Office/dev contexts, and a **Gaming** family (Gaming/WoW,
 Maple, LoL, Gaming_TBD). Both are switched from the **Magic** layer with persistent
 `&to`, using the same mechanism Engrammer uses for base-alphabet switching.
+
+### Everforest RGB firmware decision
+
+The retained Everforest layer/modifier color block is **not active** on the pinned
+MoErgo firmware, [ce69e85f585c724142aae37ddf8a7e019ff19e93](https://github.com/moergo-sc/zmk/tree/ce69e85f585c724142aae37ddf8a7e019ff19e93/app).
+It lacks `rgb_colors.h`, the `zmk,underglow-layer` binding and per-key driver.
+Ordinary underglow support does not implement these layer/modifier colors.
+The keymap and editor export now warn during preprocessing rather than silently
+omitting the block. CI's `scripts/check_rgb_build.py` checks each half's actual
+`zephyr.dts` and `.config`, emits a warning and job summary for missing firmware
+support, and rejects supported firmware that omits the node or disables its driver.
+A source-level RGB presence check must distinguish this explicit deferral from
+effective support; an unpreprocessed block does not prove it reached firmware.
+
+Firmware candidates inspected on 2026-10-13 against both pinned HID modules:
+
+| Revision | Source evidence and result |
+|---|---|
+| Current MoErgo pin `ce69e85f585c724142aae37ddf8a7e019ff19e93` | Known green for both HID modules; lacks per-key RGB implementation. |
+| [PR36 head in darknao/zmk, `db2ba9fcd3dec4c7afcf171f123585a9f8292595`](https://github.com/darknao/zmk/tree/db2ba9fcd3dec4c7afcf171f123585a9f8292595/app) | Has the header, binding and driver; relevant ZMK HID/event APIs and imported West manifest match the current pin. Candidate for both HID modules by source inspection; a full two-half build with this config is still unproven. |
+| [Historical MoErgo `aca523dfce9b6447ffd19d833b791d44f1f286de`](https://github.com/moergo-sc/zmk/tree/aca523dfce9b6447ffd19d833b791d44f1f286de/app) | The old keymap citation supplies legacy palette values, not the required per-key header/driver. |
+| [Superseded PR30](https://github.com/moergo-sc/zmk/pull/30) | Uses an older raw-array RGB format incompatible with this block's `&ug` bindings; lacks the BLE active-profile API required by the pinned Raw HID module. |
+
+[PR36 remains experimental and unmerged](https://github.com/moergo-sc/zmk/pull/36).
+Its candidate preserves the HID APIs but lacks the current pin's input workqueue
+fixes and changes split transport. Source inspection is not a hardware or build
+compatibility claim. No revision or RGB flag has been changed.
+
+**Decision: defer Everforest per-key RGB and keep the current known-green
+firmware.** A trial of the PR36 candidate with both HID modules or a forward port
+onto current firmware are separate follow-ups requiring approval and validation.
+An approved RGB implementation must produce `underglow-layer` in each generated
+devicetree and enable both `CONFIG_ZMK_RGB_UNDERGLOW` and
+`CONFIG_EXPERIMENTAL_RGB_LAYER`. Preserve both boards' brightness safety ceiling
+of **80**, step/minimum **4**, and initial brightness **16**; do not raise the
+ceiling to compensate for palette changes. RGB colors, layer/modifier indicators,
+brightness, split synchronization and battery behavior still require a hand test
+after flashing both matching UF2s.
 
 ### Home-row Shift (f/j)
 

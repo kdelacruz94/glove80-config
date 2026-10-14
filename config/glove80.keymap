@@ -101,10 +101,9 @@
 /* Custom Device-tree */
 //////////////////////////////////////////////////////////////////////////////
 //
-// Per-key RGB indicators for layers & mods -- requires PR36 beta firmware:
-// override "EXPERIMENTAL_RGB_LAYER" to "y" in Advanced Configuration and
-// select "community.pr36.per-key-rgb" from the drop-down menu located at
-// Glove80 Layout Editor > Settings > Advanced Settings > Firmware Version
+// Everforest per-key RGB indicators are unsupported by the pinned firmware.
+// Firmware/flag changes require a captain decision; see README section
+// "Everforest RGB firmware decision". Preserve the block for an approved port.
 //
 // - https://github.com/moergo-sc/zmk/pull/36
 // - https://github.com/moergo-sc/zmk/pull/30
@@ -626,6 +625,8 @@
   #undef FST
   #undef WRP
   #undef SLO
+#else
+  #warning "Everforest per-key RGB omitted: firmware lacks rgb_colors.h; see README Everforest RGB firmware decision."
 #endif
 
 

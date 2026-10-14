@@ -73,6 +73,9 @@ jobs:
           west build -s zmk/app -d "$build_dir" -b "$BOARD" -- \
             "-DZMK_CONFIG=$base_dir/config" "-DZMK_EXTRA_MODULES=$GITHUB_WORKSPACE" \
             "${shield_args[@]}"
+      - name: Validate effective Everforest RGB support
+        working-directory: ${{ env.base_dir }}
+        run: python3 "$GITHUB_WORKSPACE/scripts/check_rgb_build.py" zmk/app "$build_dir"
       - name: Package UF2 and provenance
         run: python3 scripts/firmware_provenance.py record "$build_dir"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, baseline
