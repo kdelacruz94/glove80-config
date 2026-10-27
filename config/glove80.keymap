@@ -4610,8 +4610,8 @@ macros {
   &none            &none            &none            &none               &none            &none                                                                                                 &none                &none                &none                &none                &none       &none
   &none  &rgb_ug RGB_SPI  &rgb_ug RGB_SAI  &rgb_ug RGB_HUI     &rgb_ug RGB_BRI  &rgb_ug RGB_EFF                                                                                       &rgb_ug RGB_EFF      &rgb_ug RGB_BRI      &rgb_ug RGB_HUI      &rgb_ug RGB_SAI      &rgb_ug RGB_SPI       &none
   &none  &rgb_ug RGB_SPD  &rgb_ug RGB_SAD  &rgb_ug RGB_HUD     &rgb_ug RGB_BRD  &rgb_ug RGB_EFR                                                                                       &rgb_ug RGB_EFR      &rgb_ug RGB_BRD      &rgb_ug RGB_HUD      &rgb_ug RGB_SAD      &rgb_ug RGB_SPD       &none
-  &none            &none        &kp K_APP        &kp PSCRN     &kp PAUSE_BREAK  &rgb_ug RGB_TOG  &kp _LOCK  &kp _SLEEP  &kp _POWER      &none  &linux_magic_sysrq  &tog LAYER_System  &rgb_ug RGB_TOG             &kp SLCK           &kp KP_NUM             &kp CAPS            &kp _LOCK  &kp _SLEEP
-  &none            &none            &none            &none  &linux_magic_sysrq                    &kp SLCK  &kp KP_NUM    &kp CAPS  &kp K_APP           &kp PSCRN    &kp PAUSE_BREAK                   &kp RIGHT_INDEX_MOD  &kp RIGHT_MIDDY_MOD  &kp RIGHT_RINGY_MOD  &kp RIGHT_PINKY_MOD  &kp _POWER
+  &none            &none        &kp K_APP        &kp PSCRN     &kp PAUSE_BREAK  &rgb_ug RGB_TOG  &kp _LOCK  &none        &none            &none  &none                &tog LAYER_System  &rgb_ug RGB_TOG             &kp SLCK           &kp KP_NUM             &kp CAPS            &kp _LOCK  &none
+  &none            &none            &none            &none  &none                                  &kp SLCK  &kp KP_NUM    &kp CAPS  &kp K_APP           &kp PSCRN    &kp PAUSE_BREAK                   &kp RIGHT_INDEX_MOD  &kp RIGHT_MIDDY_MOD  &kp RIGHT_RINGY_MOD  &kp RIGHT_PINKY_MOD  &none
             >;
         };
 

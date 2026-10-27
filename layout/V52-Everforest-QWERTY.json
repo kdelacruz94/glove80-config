@@ -13053,43 +13053,16 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&kp _SLEEP"
-          }
-        ],
-        "decoration": {
-          "icon": "fa-bolt",
-          "background": "#d1c4e9"
-        }
-      },
-      {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&kp _POWER"
-          }
-        ],
-        "decoration": {
-          "icon": "fa-power-off",
-          "background": "#d1c4e9"
-        }
+        "value": "&none"
       },
       {
         "value": "&none"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&linux_magic_sysrq"
-          }
-        ],
-        "decoration": {
-          "icon": "di-linux",
-          "description": "Magic SysRq key for Linux."
-        }
+        "value": "&none"
+      },
+      {
+        "value": "&none"
       },
       {
         "value": "Custom",
@@ -13149,16 +13122,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&kp _SLEEP"
-          }
-        ],
-        "decoration": {
-          "icon": "fa-bolt",
-          "background": "#d1c4e9"
-        }
+        "value": "&none"
       },
       {
         "value": "&none"
@@ -13173,16 +13137,7 @@
         "value": "&none"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&linux_magic_sysrq"
-          }
-        ],
-        "decoration": {
-          "icon": "di-linux",
-          "description": "Magic SysRq key for Linux."
-        }
+        "value": "&none"
       },
       {
         "value": "&kp",
@@ -13285,16 +13240,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&kp _POWER"
-          }
-        ],
-        "decoration": {
-          "icon": "fa-power-off",
-          "background": "#d1c4e9"
-        }
+        "value": "&none"
       }
     ],
     [
