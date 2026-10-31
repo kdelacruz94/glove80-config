@@ -132,7 +132,17 @@
         "value": "&none"
       },
       {
-        "value": "&none"
+        "value": "&kp",
+        "params": [
+          {
+            "value": "F16"
+          }
+        ],
+        "decoration": {
+          "icon": "fa-search",
+          "background": "#7fbbb3ff",
+          "description": "Flow Launcher: F16 (plain tap). Set Flow hotkey to F16 on Windows; replaces the Win+Space PowerToys path after manual flash testing."
+        }
       },
       {
         "value": "&kp",

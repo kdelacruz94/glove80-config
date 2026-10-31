@@ -245,8 +245,8 @@ slash-command keys removed).
 | 40-44 | Right C1-C5 R4 | page up/down `ctrl+shift+page_up/down` · font bigger/smaller/reset `ctrl+=` `ctrl+-` `ctrl+0` |
 | 4 | Left C2R1 | `F13` dictation, unchanged |
 
-Left C4R1 / C3R1 (base positions 2, 3) stay `&none`, reserved for PIP/PBP. System-layer
-app keys are deferred.
+Left C4R1 (base position 2) stays `&none`, reserved for PIP/PBP. Left C3R1
+(base position 3) now sends `F16` for Flow Launcher. System-layer app keys are deferred.
 
 #### Thumb timing and Shift
 
@@ -321,8 +321,36 @@ a green firmware build does not verify host compatibility.
 | 0 | Left C6R1 | Win+Ctrl+Alt+F11 | yes — monitor input → DisplayPort |
 | 1 | Left C5R1 | Win+Ctrl+Alt+F12 | yes — monitor input → USB-C |
 | 2 | Left C4R1 | `&none` (reserved for PIP/PBP) | — |
-| 3 | Left C3R1 | `&none` (reserved for PIP/PBP) | — |
+| 3 | Left C3R1 | `F16` — Flow Launcher | yes — set Flow's hotkey to `F16` on Windows |
 | 4 | Left C2R1 | Win+Shift+S | native on Windows; on CachyOS/Hyprland bind the chord to `grim`/`slurp` or `hyprshot` |
+
+### Flow Launcher — dedicated key
+
+Tap **left C3R1** (base position 3) to send `F16` directly (`&kp F16`), with
+no hold-tap or timing. This repurposes the more inward of the two unused PIP/PBP
+placeholders; it is closer to the typing columns and needs no layer or modifier
+hold. Position 2 remains reserved for PIP/PBP.
+
+`F13` is dictation, `F14` is mute, and `F15` is already on Function. No existing
+`F16` binding was found in the keymap, layout JSON, README key tables, or the
+repo's Windows/CachyOS host notes. Live OS bindings cannot be confirmed here:
+the host configurations are outside this repo. CachyOS needs its own host binding
+if this key should launch an app there.
+
+Migration on the Windows work desktop, in order:
+
+1. Flash **both halves** with matching firmware from the PR's passing CI build.
+2. Set Flow Launcher's hotkey to **F16**. If the installed Flow version requires
+   a modifier, change this binding to `&kp LA(F16)` and the JSON to its nested
+   `LA` encoding, rebuild and flash both halves, then set Flow to **Alt+F16**.
+3. Test the dedicated key while an **elevated window**, such as an admin terminal,
+   has focus.
+4. Only after that succeeds, remove the **Win+Space** remap in the **PowerToys UI
+   by hand**.
+
+**Never script PowerToys settings, because scripted edits can reset every
+PowerToys module.** `&win_space` remains unchanged; the Win+Space section above
+documents the legacy path until the remap is retired.
 
 ### Base-layer shortcuts (positions 5–10)
 

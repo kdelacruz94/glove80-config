@@ -89,6 +89,8 @@ Some keys emit a chord that does nothing until the *host* binds it. Keep this li
 current when adding one, because the keymap alone cannot show the dependency:
 
 - `F13` (base pos 22, Terminal pos 4) -- Handy on Windows, hyprwhspr on CachyOS.
+- `F16` (base pos 3) -- Flow Launcher on Windows; migration and host caveats in
+  README's "Flow Launcher — dedicated key" section.
 - `F14` (Function pos 45 only) -- host mute binding on Windows and CachyOS/Hyprland;
   see the base-layer shortcuts section in `README.md`.
 - `LG(LS(S))` (base pos 4) -- native on Windows; on CachyOS/Hyprland the same chord
