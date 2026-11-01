@@ -432,8 +432,8 @@ diff line by line. Two lines are the exception and will show as whole-line churn
 
 | Line | Field | Size |
 |---|---|---|
-| 30 | `custom_defined_behaviors` | ~342 KB |
-| 31 | `custom_devicetree` | ~23 KB |
+| 31 | `custom_defined_behaviors` | ~123 KB |
+| 32 | `custom_devicetree` | ~23 KB |
 
 That's where the Engrammer hold-taps, combos and RGB indicator blocks live. When a
 change lands in either, read `config/glove80.keymap` instead — it carries the same
@@ -601,6 +601,9 @@ After a keymap change, refresh it by pushing the `config/glove80.keymap` +
 `layout/*.json` pair (they change in the same commit — see `AGENTS.md`) and
 reloading the viz. A one-off editor export sitting in `Downloads` is not a source:
 it goes stale the moment the next binding lands.
+On the home desktop, [docs/viz-layout-install.md](docs/viz-layout-install.md) replaces
+that `Downloads` copy with links into a checkout's `layout/` via
+`scripts/install_viz_layout.py`, including PR-worktree previews and rollback.
 
 ### Config-ID limitation and host compatibility
 
