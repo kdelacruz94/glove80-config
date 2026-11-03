@@ -452,7 +452,48 @@ and never edited directly — see the code source-of-truth policy in
 1. Edit in the [Layout Editor](https://my.glove80.com).
 2. Export **both** the `.keymap` and the `.json`.
 3. Drop them in as `config/glove80.keymap` and `layout/<name>.json`, commit, push.
-4. CI builds; download `firmware` from the run's artifacts.
+4. CI builds; from this repo's checkout, find the latest main-branch build
+   (these `gh` commands work in fish, nushell, and PowerShell):
+
+   ```text
+   gh run list --branch main --limit 1
+   ```
+
+   Copy the numeric ID from the `ID` column. Replace `RUN_ID` below with it;
+   confirm the run completed successfully and note its full `headSha`:
+
+   ```text
+   gh run view RUN_ID --json conclusion,headSha,url
+   gh run download RUN_ID -n firmware -D ~/glove80-fw
+   cd ~/glove80-fw
+   ```
+
+   Use an empty download directory for each build. `gh` extracts the combined
+   `firmware` artifact directly there. In fish or nushell on Linux, verify both
+   UF2s against the included checksums; both must report `OK`:
+
+   ```text
+   sha256sum -c SHA256SUMS
+   ```
+
+   In Windows PowerShell, use the native equivalent (any mismatch throws):
+
+   ```powershell
+   Get-Content SHA256SUMS | ForEach-Object {
+       $hash, $file = $_ -split '\s+', 2
+       if ((Get-FileHash -Algorithm SHA256 $file).Hash -ne $hash) {
+           throw "Checksum mismatch: $file"
+       }
+   }
+   ```
+
+   Open `provenance-glove80_lh.json` and `provenance-glove80_rh.json` in a text
+   editor. In **both**, compare `config_sha` with the run's full `headSha` and
+   the main-branch commit you intend to flash; compare `run_id` and `run_url`
+   with the selected run. `SHA256SUMS` checks the UF2 bytes, while this provenance
+   comparison checks which configuration commit they came from. See
+   [Pinned firmware builds and provenance](#pinned-firmware-builds-and-provenance)
+   for the optional deeper metadata check.
 5. Flash `raw_hid_adapter-glove80_lh-zmk.uf2` to the **left** half and `glove80_rh-zmk.uf2` to the
    **right**. Unlike the editor's combined download, these are **per-half — do not
    flash the same file to both.**
