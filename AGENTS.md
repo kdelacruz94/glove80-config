@@ -98,11 +98,11 @@ current when adding one, because the keymap alone cannot show the dependency:
 - `LC(LA(LG(F11)))` / `LC(LA(LG(F12)))` (base pos 0 / 1) -- absolute monitor input
   select (DisplayPort / USB-C) via ControlMyMonitor VCP `0x60`; per-machine setup in
   `README.md`. Replaced the round-2 single toggle key.
-- `&term_herdr_*` macros -- herdr's prefix is `ctrl+b`; the macro sends prefix and action
-  as two separate taps, never chorded. Actions come from `docs/glove80-terminal-layer-chords.md`
-  in `~/Projects/terminal-config` (the chord contract), which also lists the emulator chords
-  (WezTerm/kitty) the Terminal layer's right hand sends: `ctrl+shift+c/v/f/k/n/page_up/page_down`
-  and `ctrl+=` / `ctrl+-` / `ctrl+0` for text zoom. Change a chord there first, then re-map the key.
+- `&term_herdr_*` macros -- each sends ONE held herdr-app chord (never a `ctrl+b` prefix
+  sequence). The chord map is `herdr-app/TUI-MIGRATION.md` ("Direct chord map") and
+  `herdr-app/keys.json` in `~/Projects/terminal-config`; change a chord there first, then
+  re-map the key. Terminal right hand sends `ctrl+shift+c/v/f/k/n`, `shift+page_up/down`
+  and `ctrl+=` / `ctrl+-` / `ctrl+0`. Last pane has no app command (`&none`).
 
 There is no local build. CI (`.github/workflows/build.yml`) is the only acceptance
 check. Before editing source pins or the workflow, read README's "Pinned firmware

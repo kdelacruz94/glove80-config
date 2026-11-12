@@ -4030,13 +4030,12 @@ macros {
 //
 // Terminal layer
 //
-// Hold the right C2R6 thumb (position 75). The LEFT hand sends herdr actions
-// (ctrl+b prefix, then the action key); the RIGHT hand sends the terminal
-// emulator chords that WezTerm and kitty share. Tapping the thumb is still a
-// one-shot Right Shift, and releasing returns straight to the base layer.
+// Hold the right C2R6 thumb (position 75). The LEFT hand sends herdr-app
+// direct chords; the RIGHT hand sends herdr-app terminal chords. Tapping the
+// thumb is still a one-shot Right Shift, and releasing returns straight to the base layer.
 //
-// The chords are defined by terminal-config's
-// docs/glove80-terminal-layer-chords.md -- change a chord there first.
+// The chords are defined by terminal-config's herdr-app/keys.json
+// (herdr-app/TUI-MIGRATION.md) -- change a chord there first.
 //
 // Position 75 was free: it held `&stumb LAYER_World RSFT` in stock Engrammer
 // and became a plain `&kp RSHFT` when the World layer was removed.
@@ -4077,117 +4076,111 @@ macros {
 
   macros {
     //
-    // herdr actions. The prefix is ctrl+b, sent and released before the action
-    // key -- never chorded with it -- so each macro is two taps.
+    // herdr-app actions. Each macro is a one-tap wrapper for ONE held chord from
+    // terminal-config's herdr-app/keys.json -- never a ctrl+b prefix sequence.
     // Requires the intended terminal/herdr focus and matching host bindings.
     // No focus/composer/version detection: see README's macro prerequisites.
     //
     ZMK_MACRO(term_herdr_tab_prev,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp P>;
+      bindings = <&macro_tap &kp LC(PG_UP)>;
     )
 
     ZMK_MACRO(term_herdr_tab_next,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp N>;
+      bindings = <&macro_tap &kp LC(PG_DN)>;
     )
 
     ZMK_MACRO(term_herdr_workspace_prev,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(H)>;
+      bindings = <&macro_tap &kp LC(LS(PG_UP))>;
     )
 
     ZMK_MACRO(term_herdr_workspace_next,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(L)>;
+      bindings = <&macro_tap &kp LC(LS(PG_DN))>;
     )
 
     ZMK_MACRO(term_herdr_tab_new,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp C>;
+      bindings = <&macro_tap &kp LC(LS(T))>;
     )
 
     ZMK_MACRO(term_herdr_tab_close,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(X)>;
+      bindings = <&macro_tap &kp LC(LS(W))>;
     )
 
     ZMK_MACRO(term_herdr_split_side,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp V>;
+      bindings = <&macro_tap &kp LC(LS(O))>;
     )
 
     ZMK_MACRO(term_herdr_split_below,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp MINUS>;
+      bindings = <&macro_tap &kp LC(LS(E))>;
     )
 
     ZMK_MACRO(term_herdr_zoom,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp Z>;
+      bindings = <&macro_tap &kp LC(LS(Z))>;
     )
 
     ZMK_MACRO(term_herdr_workspace_picker,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp W>;
+      bindings = <&macro_tap &kp LC(LS(K))>;
     )
 
     ZMK_MACRO(term_herdr_goto,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp G>;
-    )
-
-    ZMK_MACRO(term_herdr_last_pane,
-      wait-ms = <15>;
-      tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp A>;
+      bindings = <&macro_tap &kp LC(LS(P))>;
     )
 
     ZMK_MACRO(term_herdr_agent_next,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(J)>;
+      bindings = <&macro_tap &kp LA(DOWN)>;
     )
 
     ZMK_MACRO(term_herdr_agent_prev,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp LS(K)>;
+      bindings = <&macro_tap &kp LA(UP)>;
     )
 
     ZMK_MACRO(term_herdr_pane_left,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp H>;
+      bindings = <&macro_tap &kp LA(H)>;
     )
 
     ZMK_MACRO(term_herdr_pane_down,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp J>;
+      bindings = <&macro_tap &kp LA(J)>;
     )
 
     ZMK_MACRO(term_herdr_pane_up,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp K>;
+      bindings = <&macro_tap &kp LA(K)>;
     )
 
     ZMK_MACRO(term_herdr_pane_right,
       wait-ms = <15>;
       tap-ms = <15>;
-      bindings = <&macro_tap &kp LC(B) &kp L>;
+      bindings = <&macro_tap &kp LA(L)>;
     )
   };
 };
@@ -4364,7 +4357,7 @@ macros {
 
         layer_QWERTY {
             bindings = <
-  &kp LC(LA(LG(F11)))           &kp LC(LA(LG(F12)))                         &none                       &kp F16                 &kp LG(LS(S))                                                                                                                                                   &term_herdr_last_pane     &kp LG(LC(LEFT))  &kp LG(LS(F))  &kp LG(LA(RBKT))  &kp LG(LC(RIGHT))
+  &kp LC(LA(LG(F11)))           &kp LC(LA(LG(F12)))                         &none                       &kp F16                 &kp LG(LS(S))                                                                                                                                                   &none     &kp LG(LC(LEFT))  &kp LG(LS(F))  &kp LG(LA(RBKT))  &kp LG(LC(RIGHT))
                      &kp LC(B)                        &kp N1                        &kp N2                        &kp N3                        &kp N4  &kp N5                                                                                                                                           &kp N6                         &kp N7                         &kp N8                         &kp N9                            &kp N0          &term_herdr_workspace_picker
                       &kp F13                         &kp Q                         &kp W                         &kp E                         &kp R   &kp T                                                                                                                                            &kp Y                          &kp U                          &kp I                          &kp O                             &kp P                     &kp MINUS
                     &kp EQUAL  &LeftPinky (A, LAYER_QWERTY)  &LeftRingy (S, LAYER_QWERTY)  &LeftMiddy (D, LAYER_QWERTY)  &LeftIndex (F, LAYER_QWERTY)   &kp G                                                                                                                                            &kp H  &RightIndex (J, LAYER_QWERTY)  &RightMiddy (K, LAYER_QWERTY)  &RightRingy (L, LAYER_QWERTY)  &RightPinky (SEMI, LAYER_QWERTY)                       &kp SQT
@@ -4697,8 +4690,8 @@ macros {
                 &none  &none  &none  &none  &kp F13  &none  &none  &none  &none  &none
                 &none  &term_herdr_tab_new  &term_herdr_tab_close  &term_herdr_split_side  &term_herdr_split_below  &term_herdr_zoom  &none  &none  &none  &none  &none  &none
                 &none  &none  &term_herdr_pane_left  &term_herdr_pane_down  &term_herdr_pane_up  &term_herdr_pane_right  &kp LC(LS(C))  &kp LC(LS(V))  &kp LC(LS(F))  &kp LC(LS(K))  &kp LC(LS(N))  &none
-                &none  &term_herdr_workspace_prev  &term_herdr_workspace_next  &term_herdr_tab_prev  &term_herdr_tab_next  &none  &kp LC(LS(PG_UP))  &kp LC(LS(PG_DN))  &kp LC(EQUAL)  &kp LC(MINUS)  &kp LC(N0)  &none
-                &none  &term_herdr_workspace_picker  &term_herdr_goto  &term_herdr_last_pane  &term_herdr_agent_next  &term_herdr_agent_prev  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &term_herdr_workspace_prev  &term_herdr_workspace_next  &term_herdr_tab_prev  &term_herdr_tab_next  &none  &kp LS(PG_UP)  &kp LS(PG_DN)  &kp LC(EQUAL)  &kp LC(MINUS)  &kp LC(N0)  &none
+                &none  &term_herdr_workspace_picker  &term_herdr_goto  &none  &term_herdr_agent_next  &term_herdr_agent_prev  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &trans  &none  &none  &none  &none  &none  &none  &trans  &none  &none  &none  &none
             >;
         };

@@ -227,22 +227,23 @@ After flashing both matching UF2s on the Windows work desktop:
 
 ### Terminal layer (layer 30, `Terminal`)
 
-Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr actions
-(`ctrl+b` prefix, then the key) and the **right hand** sends the terminal emulator
-chords that WezTerm and kitty share. Tapping that key is still a one-shot Right
+Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr-app
+direct chords (one held chord per key, no `ctrl+b` prefix) and the **right hand**
+sends herdr-app terminal chords. Tapping that key is still a one-shot Right
 Shift, and releasing returns to base. The chord contract lives in
-[terminal-config `docs/glove80-terminal-layer-chords.md`](https://github.com/kdelacruz94/terminal-config/blob/main/docs/glove80-terminal-layer-chords.md);
-this layer only maps keys to it. Replaces the round-2 `AI_Claude` layer (Claude Code
+terminal-config's [`herdr-app/TUI-MIGRATION.md`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/TUI-MIGRATION.md) "Direct chord map" and [`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json);
+this layer only maps keys to it. The old last-pane action has no app command, so
+those two positions (base 5, Terminal 49) are `&none`. Replaces the round-2 `AI_Claude` layer (Claude Code
 slash-command keys removed).
 
 | Position | Key | Sends |
 |---|---|---|
-| 11-15 | Left C5-C1 R2 | herdr new tab `c` · close tab `shift+x` · split side `v` · split below `minus` · pane zoom `z` |
-| 24-27 | Left C4-C1 R3 | herdr focus pane left/down/up/right `h` `j` `k` `l` |
-| 35-38 | Left C5-C2 R4 | herdr previous/next workspace `shift+h` `shift+l` · previous/next tab `p` `n` |
-| 47-51 | Left C5-C1 R5 | herdr workspace picker `w` · goto `g` · last pane `a` · next/prev agent `shift+j` `shift+k` |
-| 28-32 | Right C1-C5 R3 | copy `ctrl+shift+c` · paste `ctrl+shift+v` · scrollback search `ctrl+shift+f` · clear `ctrl+shift+k` · new window `ctrl+shift+n` |
-| 40-44 | Right C1-C5 R4 | page up/down `ctrl+shift+page_up/down` · font bigger/smaller/reset `ctrl+=` `ctrl+-` `ctrl+0` |
+| 11-15 | Left C5-C1 R2 | new tab `ctrl+shift+t` · close tab `ctrl+shift+w` · split side `ctrl+shift+o` · split below `ctrl+shift+e` · pane zoom `ctrl+shift+z` |
+| 24-27 | Left C4-C1 R3 | focus pane left/down/up/right `alt+h` `alt+j` `alt+k` `alt+l` |
+| 35-38 | Left C5-C2 R4 | previous/next space `ctrl+shift+page_up/down` · previous/next tab `ctrl+page_up/down` |
+| 47-51 | Left C5-C1 R5 | space/tab picker `ctrl+shift+k` · command palette `ctrl+shift+p` · position 49 `&none` (last pane unavailable) · next/prev agent `alt+down` `alt+up` |
+| 28-32 | Right C1-C5 R3 | Copy `ctrl+shift+c` · Paste `ctrl+shift+v` · Find `ctrl+shift+f` · APP PICKER `ctrl+shift+k` (duplicate of position 47, intentional) · NEW SPACE `ctrl+shift+n`. Clear-scrollback and a second OS window have no app command |
+| 40-44 | Right C1-C5 R4 | page up/down `shift+page_up/down` · font bigger/smaller/reset `ctrl+=` `ctrl+-` `ctrl+0` |
 | 4 | Left C2R1 | `F13` dictation, unchanged |
 
 Left C4R1 (base position 2) stays `&none`, reserved for PIP/PBP. Left C3R1
@@ -281,23 +282,21 @@ previous thumb press (except the rapid-repeat test).
 
 These macros send keystrokes to the focused host application; they cannot check
 focus, detect a composer, or wait for the host to become ready. Before using
-them, focus the intended terminal and herdr instance with the matching
-[terminal-config chord contract](https://github.com/kdelacruz94/terminal-config/blob/main/docs/glove80-terminal-layer-chords.md)
-loaded (`ctrl+b` prefix and the configured actions). Prefix and action are
-separate taps, with fixed 15 ms tap/wait timing. Release other modifiers and
+them, focus the intended herdr-app window with terminal-config's
+[`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json) chord map applied. Each macro is one tap of one held chord. Release other modifiers and
 consume or let any sticky Shift expire first; extra modifiers can change the
-chords. Use a disposable pane for checks, especially close-tab and clear-screen.
+chords. Use a disposable pane for checks, especially close-tab.
 
-The right-hand chords require the matching WezTerm or kitty configuration.
-Copy needs a selection; paste needs the intended clipboard content and a
-focused composer ready to accept it. Dialogs, search/picker modes, completion
-menus, or a running command can interpret input differently. This layer no
-longer sends Claude Code slash commands, so it has no Claude Code/Codex
-composer-version requirement. No minimum supported herdr, WezTerm, or kitty
-version or hardware-tested version matrix is recorded here: compatibility is
-conditional on the installed host versions supporting the contract's actions.
-Record the OS, terminal, herdr, and composer versions during the hand test;
-a green firmware build does not verify host compatibility.
+The right-hand chords require the matching herdr-app contract (the `terminal` section
+of that `keys.json`) to be applied on the host. Copy needs a selection; paste needs the
+intended clipboard content and a focused composer ready to accept it. Dialogs,
+search/picker modes, completion menus, or a running command can interpret input
+differently. This layer no longer sends Claude Code slash commands, so it has no Claude
+Code/Codex composer-version requirement. No minimum herdr-app version, host OS, or
+key-press-tested matrix is recorded here: the chords are unverified on real hardware, and
+compatibility is conditional on the installed herdr-app supporting the contract's actions.
+Record the OS, herdr-app, and composer versions during the hand test; a green firmware
+build does not verify host compatibility.
 
 #### Captain hardware hand test
 
@@ -356,14 +355,14 @@ documents the legacy path until the remap is retired.
 
 | Position | Key | Output |
 |---|---|---|
-| 5 | Right C2R1 | herdr last pane (Ctrl+B, `a`) |
+| 5 | Right C2R1 | `&none` (herdr last pane has no app command) |
 | 6 | Right C3R1 | Win+Ctrl+Left — previous workspace |
 | 7 | Right C4R1 | Win+Shift+F |
 | 8 | Right C5R1 | Win+Alt+] (`oem_6` on Windows) |
 | 9 | Right C6R1 | Win+Ctrl+Right |
-| 10 | Left C6R2 | Ctrl+B — the herdr prefix, as a plain tap |
+| 10 | Left C6R2 | Ctrl+B — an ordinary control key (not a herdr-app prefix) |
 
-Position 10 is just the prefix: tap it, then press the herdr action key. It needs no
+Position 10 is a plain Ctrl+B for editors and other programs. It needs no
 host binding. Mute lives on the **Function** layer (position 45, `F14`) and still
 needs one — on Windows remap `F14` to `Volume Mute` with [PowerToys Keyboard
 Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager)
