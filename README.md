@@ -231,7 +231,7 @@ Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr-app
 direct chords (one held chord per key, no `ctrl+b` prefix) and the **right hand**
 sends herdr-app terminal chords. Tapping that key is still a one-shot Right
 Shift, and releasing returns to base. The chord contract lives in
-terminal-config's `herdr-app/TUI-MIGRATION.md` "Direct chord map" and `herdr-app/keys.json`;
+terminal-config's [`herdr-app/TUI-MIGRATION.md`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/TUI-MIGRATION.md) "Direct chord map" and [`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json);
 this layer only maps keys to it. The old last-pane action has no app command, so
 those two positions (base 5, Terminal 49) are `&none`. Replaces the round-2 `AI_Claude` layer (Claude Code
 slash-command keys removed).
@@ -283,20 +283,20 @@ previous thumb press (except the rapid-repeat test).
 These macros send keystrokes to the focused host application; they cannot check
 focus, detect a composer, or wait for the host to become ready. Before using
 them, focus the intended herdr-app window with terminal-config's
-`herdr-app/keys.json` chord map applied. Each macro is one tap of one held chord. Release other modifiers and
+[`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json) chord map applied. Each macro is one tap of one held chord. Release other modifiers and
 consume or let any sticky Shift expire first; extra modifiers can change the
 chords. Use a disposable pane for checks, especially close-tab.
 
-The right-hand chords require the matching WezTerm or kitty configuration.
-Copy needs a selection; paste needs the intended clipboard content and a
-focused composer ready to accept it. Dialogs, search/picker modes, completion
-menus, or a running command can interpret input differently. This layer no
-longer sends Claude Code slash commands, so it has no Claude Code/Codex
-composer-version requirement. No minimum supported herdr, WezTerm, or kitty
-version or hardware-tested version matrix is recorded here: compatibility is
-conditional on the installed host versions supporting the contract's actions.
-Record the OS, terminal, herdr, and composer versions during the hand test;
-a green firmware build does not verify host compatibility.
+The right-hand chords require the matching herdr-app contract (the `terminal` section
+of that `keys.json`) to be applied on the host. Copy needs a selection; paste needs the
+intended clipboard content and a focused composer ready to accept it. Dialogs,
+search/picker modes, completion menus, or a running command can interpret input
+differently. This layer no longer sends Claude Code slash commands, so it has no Claude
+Code/Codex composer-version requirement. No minimum herdr-app version, host OS, or
+key-press-tested matrix is recorded here: the chords are unverified on real hardware, and
+compatibility is conditional on the installed herdr-app supporting the contract's actions.
+Record the OS, herdr-app, and composer versions during the hand test; a green firmware
+build does not verify host compatibility.
 
 #### Captain hardware hand test
 
