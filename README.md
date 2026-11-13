@@ -425,6 +425,7 @@ which asked the host script to guess which input to move to.
 | `config/glove80_lh.conf` | Central-only Kconfig: Raw HID, visualizer config ID. |
 | `config/west.yml` | Firmware source + modules. |
 | `build.yaml` | Board/shield matrix. |
+| `zephyr/module.yml`, `boards/shields/.gitkeep` | Zephyr module scaffold. CI passes this repo as `-DZMK_EXTRA_MODULES` (`.github/workflows/build.yml`), and `board_root: .` points at `boards/`. No custom shields yet, so `boards/shields/` holds only the placeholder. |
 
 The `.json` is pretty-printed, so key bindings, layer names, combos and macros all
 diff line by line. Two lines are the exception and will show as whole-line churn:
