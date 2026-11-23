@@ -98,11 +98,12 @@ current when adding one, because the keymap alone cannot show the dependency:
 - `LC(LA(LG(F11)))` / `LC(LA(LG(F12)))` (base pos 0 / 1) -- absolute monitor input
   select (DisplayPort / USB-C) via ControlMyMonitor VCP `0x60`; per-machine setup in
   `README.md`. Replaced the round-2 single toggle key.
-- `&term_herdr_*` macros -- each sends ONE held herdr-app chord (never a `ctrl+b` prefix
-  sequence). The chord map is `herdr-app/TUI-MIGRATION.md` ("Direct chord map") and
-  `herdr-app/keys.json` in `~/Projects/terminal-config`; change a chord there first, then
-  re-map the key. Terminal right hand sends `ctrl+shift+c/v/f/k/n`, `shift+page_up/down`
-  and `ctrl+=` / `ctrl+-` / `ctrl+0`. Last pane has no app command (`&none`).
+- Terminal layer and base pos 10 / 21 -- every key is ONE held chord that BOTH
+  herdr-app and T3 Code bind to the same concept (herdr tab = T3 thread); right-hand
+  T3-only chords are swallowed by herdr-app. The contract is `herdr-app/keys.json` and
+  `t3/keybindings.json` in `~/Projects/terminal-config`; change a chord there first
+  (both files when it is shared), then re-map the key. README's Terminal table lists
+  each chord.
 
 There is no local build. CI (`.github/workflows/build.yml`) is the only acceptance
 check. Before editing source pins or the workflow, read README's "Pinned firmware
