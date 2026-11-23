@@ -132,7 +132,7 @@ home-row modifiers keep their existing settings.
 |---|---|---|
 | `flavor` | `tap-preferred` | An overlapping or nested letter tap cannot select Shift before the timer. |
 | `tapping-term-ms` | 150 | Activate Shift after a short deliberate hold. |
-| `require-prior-idle-ms` | 200 | A non-modifier press less than 200 ms before f/j forces a letter, even on a long hold. |
+| `require-prior-idle-ms` | 100 | A non-modifier press less than 100 ms before f/j forces a letter, even on a long hold. |
 | `quick-tap-ms` | 0 | No additional same-key repeat guard. |
 | `hold-trigger-key-positions` | opposite hand | Check the first other **press**, including a same-hand key held across the timeout. |
 | `hold-trigger-on-release` | omitted (false) | A held same-hand letter can veto Shift before the timer expires. |
@@ -153,8 +153,15 @@ Increasing prior idle alone cannot protect a word after a long pause.
 PR #16 used 400 ms to protect longer rolls. After flashing it, deliberate
 `Quality` / `Inventory` required too much waiting. The current tuning lowers
 only the f/j timer to 150 ms; the PR #16 decision rule stays intact.
+A later change lowered prior idle from 200 to 100 ms so a mid-sentence capital
+needs a shorter pause (sunaku's v52 development snapshot uses 80 ms, stock v52
+150 ms). The cost is accepted on purpose: 100 ms protects word-final f/j only
+during fast bursts. At normal typing gaps (120 ms or more), an `if`/`of`/`off`
+whose f is held for 150 ms or longer loses that f; the replay records these cases.
+For capitals in flowing text, the thumb one-shot Shift combo (T1+T4) needs no
+pause.
 
-**Deliberate Shift:** pause at least 250 ms after the previous letter press,
+**Deliberate Shift:** pause at least 150 ms after the previous letter press,
 hold f/j alone for **150–250 ms**, then press the target. Either release
 order produces a capital. This also supports same-hand Shift and Shift-click
 once Shift has activated. An f/j + letter gesture released before 150 ms
@@ -184,7 +191,7 @@ firmware builds and keyboard testing are still required.
 
 After flashing **each half's matching UF2**, test in a plain text editor:
 
-1. Pause at least half a second, hold j alone for 150–250 ms, and type
+1. Pause about 150 ms, hold j alone for 150–250 ms, and type
    `Quality`; repeat with f for `Inventory`. Expect no leading j/f. Try both
    release orders; also check f + r / j + u after the hold and Shift-click.
 2. Type `for just of` at normal speed; expect lowercase words with every f/j.
@@ -192,11 +199,12 @@ After flashing **each half's matching UF2**, test in a plain text editor:
 3. Overlap f→o and j→w, releasing f/j before 150 ms in each release order:
    expect `fo` and `jw`. Overlap j→u and f→r with the target held beyond the
    timer: expect `ju` and `fr` if the target was pressed before 150 ms.
-4. Type `of off if` rapidly; expect the exact lowercase text. Check ordinary
+4. Type `of off if` rapidly; expect the exact lowercase text. At a relaxed
+   pace with a lingering f, expect the documented f loss. Check ordinary
    Ctrl/Alt/Super shortcuts too.
 
 The calibration knobs are `HRM_SHIFT_TAPPING_TERM_MS` (150) and
-`HRM_SHIFT_PRIOR_IDLE_MS` (200) near the top of the keymap and in the JSON's
+`HRM_SHIFT_PRIOR_IDLE_MS` (100) near the top of the keymap and in the JSON's
 `custom_defined_behaviors`. Synchronize both files, rebuild, and repeat the
 checklist after any adjustment.
 
@@ -263,7 +271,11 @@ can be swallowed if it remains held across the timer.
 
 For ordinary held Shift, use the dedicated left C6R5 key (position 46): tap for
 sticky one-shot Left Shift, hold at least 200 ms for traditional Left Shift.
-It has no layer action. The f/j home-row Shifts are another option; their
+It has no layer action. For a one-shot Shift with no timing, chord T1+T4 on
+either hand (Esc + Backspace on the left, Enter + Space on the right) and then
+type the letter; holding the chord works as a normal Shift. Thumb combos follow
+sunaku's v52 development snapshot: CapsLock T1+T4+T5, Alt-Tab T2+T5, Ctrl-Tab
+T1+T5, CapsWord T4+T5. The f/j home-row Shifts are another option; their
 150 ms timer and prior-idle requirements are described [above](#home-row-shift-fj).
 
 These are expected outcomes from the configured behavior and pinned hold-tap

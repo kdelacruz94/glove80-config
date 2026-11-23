@@ -124,7 +124,7 @@ static void word(const char *text,int gap,int dwell,const char *wanted) {
     }
     char label[64];
     snprintf(label,sizeof(label),"%s gap=%d dwell=%d",text,gap,dwell);
-    expect(label,wanted,strcmp(text,wanted)?1:0);
+    expect(label,wanted,strlen(text)-strlen(wanted)); /* each lost f/j became one Shift press */
 }
 int main(void) {
     devices[0].config=&left_cfg; devices[1].config=&right_cfg;
@@ -194,14 +194,15 @@ int main(void) {
         reset();
         key(31,true,1000);
         key(31,false,1040);
-        key(mod,true,1150);
+        key(mod,true,1000+left_cfg.require_prior_idle_ms-20);
         key(mod,false,2000);
         expect("prior idle forces tap",side?"oj":"of",0);
     }
     const char *words[]={"for","just","if","fun","jump","of","off"};
     /* Fixed 150 ms expectations: rows are gaps 60..180, columns dwells 50..230.
      * f/j dwell adds 90 ms. A word-start timeout loses f/j; subsequent letters
-     * capitalize only while Shift remains down. Prior-idle protects if/of/off. */
+     * capitalize only while Shift remains down. The 100 ms prior idle protects
+     * if/of/off only at the 60/90 ms gaps; slower gaps lose a lingering f. */
     const char *expected[7][5][7]={
         {
             {"for","OR","OR","OR","OR","OR","OR"},
@@ -217,7 +218,13 @@ int main(void) {
             {"just","Ust","Ust","Ust","Ust","Ust","USt"},
             {"just","ust","Ust","Ust","Ust","Ust","Ust"},
         },
-        {{NULL}}, /* if stays lowercase */
+        {
+            {"if","if","if","if","if","if","if"},
+            {"if","if","if","if","if","if","if"},
+            {"if","i","i","i","i","i","i"},
+            {"if","i","i","i","i","i","i"},
+            {"if","i","i","i","i","i","i"},
+        },
         {
             {"fun","UN","UN","UN","UN","UN","UN"},
             {"fun","Un","UN","UN","UN","UN","UN"},
@@ -232,8 +239,20 @@ int main(void) {
             {"jump","Ump","Ump","Ump","Ump","Ump","UMp"},
             {"jump","ump","Ump","Ump","Ump","Ump","Ump"},
         },
-        {{NULL}}, /* of stays lowercase */
-        {{NULL}}, /* off stays lowercase */
+        {
+            {"of","of","of","of","of","of","of"},
+            {"of","of","of","of","of","of","of"},
+            {"of","o","o","o","o","o","o"},
+            {"of","o","o","o","o","o","o"},
+            {"of","o","o","o","o","o","o"},
+        },
+        {
+            {"off","off","off","off","off","off","off"},
+            {"off","off","off","off","off","off","off"},
+            {"off","of","of","of","of","of","of"},
+            {"off","of","of","of","of","of","of"},
+            {"off","o","o","o","o","o","o"},
+        },
     };
     for(unsigned w=0;w<sizeof(words)/sizeof(words[0]);w++) for(int gap=60;gap<=180;gap+=30) for(int dwell=50;dwell<=240;dwell+=30) {
         const char *wanted=expected[w][(gap-60)/30][(dwell-50)/30];
