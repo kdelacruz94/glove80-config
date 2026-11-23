@@ -235,23 +235,36 @@ After flashing both matching UF2s on the Windows work desktop:
 
 ### Terminal layer (layer 30, `Terminal`)
 
-Hold the **right C2R6 thumb** (position 75): the **left hand** sends herdr-app
-direct chords (one held chord per key, no `ctrl+b` prefix) and the **right hand**
-sends herdr-app terminal chords. Tapping that key is still a one-shot Right
-Shift, and releasing returns to base. The chord contract lives in
-terminal-config's [`herdr-app/TUI-MIGRATION.md`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/TUI-MIGRATION.md) "Direct chord map" and [`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json);
-this layer only maps keys to it. The old last-pane action has no app command, so
-those two positions (base 5, Terminal 49) are `&none`. Replaces the round-2 `AI_Claude` layer (Claude Code
-slash-command keys removed).
+Hold the **right C2R6 thumb** (position 75). The **left hand** sends shared
+navigation, and the **right hand** sends T3 Code agent controls. Tapping that key is
+still a one-shot Right Shift, and releasing returns to base.
 
-| Position | Key | Sends |
+One key means one concept in both apps: a herdr-app tab is a T3 Code thread, and a
+herdr pane is a T3 focus region. Each app binds the same held chord to its own version
+of the concept, so a key does the matching thing in whichever window has focus. Every
+key is one held chord, with no prefix. herdr-app swallows the right-hand T3 chords, so
+a misfire there does nothing instead of falling through to a terminal program. The
+chord contract lives in terminal-config: [`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json)
+(table: `herdr-app/TUI-MIGRATION.md` "Direct chord map") and
+[`t3/keybindings.json`](https://github.com/kdelacruz94/terminal-config/blob/main/t3/keybindings.json).
+This layer only maps keys to it. Replaces the round-2 `AI_Claude` layer and the
+TUI-era herdr layout.
+
+| Position | Key | Sends: herdr-app / T3 Code |
 |---|---|---|
-| 11-15 | Left C5-C1 R2 | new tab `ctrl+shift+t` · close tab `ctrl+shift+w` · split side `ctrl+shift+o` · split below `ctrl+shift+e` · pane zoom `ctrl+shift+z` |
-| 24-27 | Left C4-C1 R3 | focus pane left/down/up/right `alt+h` `alt+j` `alt+k` `alt+l` |
-| 35-38 | Left C5-C2 R4 | previous/next space `ctrl+shift+page_up/down` · previous/next tab `ctrl+page_up/down` |
-| 47-51 | Left C5-C1 R5 | space/tab picker `ctrl+shift+k` · command palette `ctrl+shift+p` · position 49 `&none` (last pane unavailable) · next/prev agent `alt+down` `alt+up` |
-| 28-32 | Right C1-C5 R3 | Copy `ctrl+shift+c` · Paste `ctrl+shift+v` · Find `ctrl+shift+f` · APP PICKER `ctrl+shift+k` (duplicate of position 47, intentional) · NEW SPACE `ctrl+shift+n`. Clear-scrollback and a second OS window have no app command |
-| 40-44 | Right C1-C5 R4 | page up/down `shift+page_up/down` · font bigger/smaller/reset `ctrl+=` `ctrl+-` `ctrl+0` |
+| 11-15 | Left 1-5 | tab 1-5 / thread 1-5 `ctrl+1`..`ctrl+5` |
+| 22, 34 | Left C6R3, C6R4 | previous / next agent `alt+up` `alt+down` (herdr only) |
+| 23 | Left Q | close tab / settle thread `ctrl+shift+w` |
+| 24, 26 | Left W, R | previous / next tab or thread `ctrl+pageup` `ctrl+pagedown` |
+| 27 | Left T | new tab / new thread `ctrl+shift+t` |
+| 25, 36-38 | Left E, S D F | focus up, left, down, right `alt+k` `alt+h` `alt+j` `alt+l` (T3: previous/next region) |
+| 35 | Left A | command palette `ctrl+shift+p` |
+| 39 | Left G | space/tab picker / T3 palette `ctrl+shift+k` |
+| 47 | Left Z | pane zoom `ctrl+shift+z` (herdr only) |
+| 48, 49 | Left X, C | split down / right `ctrl+shift+e` `ctrl+shift+o` (T3: terminal split, terminal focus only) |
+| 50, 51 | Left V, B | previous / next space `ctrl+shift+pageup/pagedown` (herdr only) |
+| 28-32 | Right Y U I O P | T3 model picker `ctrl+shift+m` · permissions mode `ctrl+shift+a` · effort `ctrl+shift+r` · stop turn `ctrl+shift+s` · diff panel `ctrl+shift+d` |
+| 40-44 | Right H J K L ; | T3 back `ctrl+shift+[` · terminal toggle `ctrl+shift+j` · sidebar (both apps) `ctrl+shift+b` · forward `ctrl+shift+]` · file picker `ctrl+shift+u` |
 | 4 | Left C2R1 | `F13` dictation, unchanged |
 
 Left C4R1 (base position 2) stays `&none`, reserved for PIP/PBP. Left C3R1
@@ -261,7 +274,7 @@ Left C4R1 (base position 2) stays `&none`, reserved for PIP/PBP. Left C3R1
 
 The former AI thumb uses a balanced hold-tap: a 200 ms hold selects Terminal;
 the tap sends sticky one-shot Right Shift (expires after 500 ms unused).
-The positional trigger list is the left hand plus the ten emulator positions
+The positional trigger list is the left hand plus the ten T3 Code positions
 (28-32, 40-44). With `hold-trigger-on-release`, a right-hand key outside that
 list must **release before the 200 ms timer** to force the Shift tap. The list
 does not prevent a standalone long hold from activating Terminal. Once Terminal
@@ -286,29 +299,24 @@ previous thumb press (except the rapid-repeat test).
 | Gesture | Expected outcome |
 |---|---|
 | Tap position 75, release before 200 ms, then tap N within 500 ms | One-shot Shift produces `N`; the following N is lowercase. Terminal stays inactive. |
-| Fast same-hand chord: hold 75, press and release N, then release 75, all before 200 ms | Produces `N` via the Shift tap; Terminal stays inactive. This guarantee excludes the ten emulator positions. |
+| Fast same-hand chord: hold 75, press and release N, then release 75, all before 200 ms | Produces `N` via the Shift tap; Terminal stays inactive. This guarantee excludes the ten T3 Code positions. |
 | Long hold: hold 75 alone past 200 ms, then press N | Terminal activates; N is `&none` and produces nothing. Release 75, then N works normally. A mapped Terminal key sends its documented chord instead. |
 | Rapid tap-then-hold: tap 75, press it again within 300 ms of the first **press**, and hold past 200 ms | The 300 ms `quick-tap-ms` guard forces the second gesture to the Shift tap action; Terminal stays inactive. Waiting more than 300 ms before pressing again permits the normal long hold. |
 
 #### Macro prerequisites
 
-These macros send keystrokes to the focused host application; they cannot check
-focus, detect a composer, or wait for the host to become ready. Before using
-them, focus the intended herdr-app window with terminal-config's
-[`herdr-app/keys.json`](https://github.com/kdelacruz94/terminal-config/blob/main/herdr-app/keys.json) chord map applied. Each macro is one tap of one held chord. Release other modifiers and
-consume or let any sticky Shift expire first; extra modifiers can change the
-chords. Use a disposable pane for checks, especially close-tab.
+These keys send keystrokes to the focused host application; they cannot check
+focus, detect a composer, or wait for the host to become ready. Before using them,
+apply terminal-config's `herdr-app/keys.json` and `t3/keybindings.json` on that host
+and focus the intended window. Release other modifiers and consume or let any sticky
+Shift expire first; extra modifiers can change the chords. Use a disposable tab and
+thread for checks, especially close/settle and stop.
 
-The right-hand chords require the matching herdr-app contract (the `terminal` section
-of that `keys.json`) to be applied on the host. Copy needs a selection; paste needs the
-intended clipboard content and a focused composer ready to accept it. Dialogs,
-search/picker modes, completion menus, or a running command can interpret input
-differently. This layer no longer sends Claude Code slash commands, so it has no Claude
-Code/Codex composer-version requirement. No minimum herdr-app version, host OS, or
-key-press-tested matrix is recorded here: the chords are unverified on real hardware, and
-compatibility is conditional on the installed herdr-app supporting the contract's actions.
-Record the OS, herdr-app, and composer versions during the hand test; a green firmware
-build does not verify host compatibility.
+No minimum herdr-app or T3 Code version, host OS, or key-press-tested matrix is
+recorded here: the chords are unverified on real hardware. Both apps ship weekly, and
+T3 Code appends new defaults on startup, so a later default can take one of these
+chords back. Record the OS and both app versions during the hand test; a green
+firmware build does not verify host compatibility.
 
 #### Captain hardware hand test
 
@@ -322,8 +330,9 @@ build does not verify host compatibility.
 - [ ] Dedicated left Shift: verify its sticky tap and traditional held Shift
       without a layer change; check f/j separately using the tests above.
 - [ ] Record host versions and confirm focus, selection/clipboard, composer
-      readiness, modifier state, and representative herdr/emulator actions
-      against the installed chord contract.
+      readiness, modifier state, and representative herdr-app and T3 Code
+      actions against the installed chord contract, including one T3-only key
+      pressed in herdr-app (expect nothing).
 
 ### Base-layer first row (positions 0–4)
 
@@ -372,10 +381,10 @@ documents the legacy path until the remap is retired.
 | 7 | Right C4R1 | Win+Shift+F |
 | 8 | Right C5R1 | Win+Alt+] (`oem_6` on Windows) |
 | 9 | Right C6R1 | Win+Ctrl+Right |
-| 10 | Left C6R2 | Ctrl+B — an ordinary control key (not a herdr-app prefix) |
+| 10 | Left C6R2 | command palette `ctrl+shift+p` in herdr-app and T3 Code (was the old Ctrl+B prefix) |
 
-Position 10 is a plain Ctrl+B for editors and other programs. It needs no
-host binding. Mute lives on the **Function** layer (position 45, `F14`) and still
+Position 10 needs the Terminal layer's host contract (above); position 21 at the
+other edge is the picker `ctrl+shift+k`. Mute lives on the **Function** layer (position 45, `F14`) and still
 needs one — on Windows remap `F14` to `Volume Mute` with [PowerToys Keyboard
 Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager)
 (PowerToys must stay running); on CachyOS add this to
