@@ -870,7 +870,7 @@
 
 // f/j Shift tuning only; keep the other home-row modifiers on their defaults.
 #define HRM_SHIFT_TAPPING_TERM_MS 150
-#define HRM_SHIFT_PRIOR_IDLE_MS 200
+#define HRM_SHIFT_PRIOR_IDLE_MS 100
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1096,11 +1096,11 @@ combos {
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
 
-  // T1+T4
+  // T2+T5
   #if defined(_A_TAB) && defined(LAYER_Cursor)
   combo_alt_tab_switcher_left {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_LH_T1 POS_LH_T4>;
+    key-positions = <POS_LH_T2 POS_LH_T5>;
     bindings = <&mod_tab_chord _A_TAB LAYER_Cursor>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
@@ -1108,7 +1108,7 @@ combos {
 
   combo_hyper_GACS_right {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_RH_T1 POS_RH_T4>;
+    key-positions = <POS_RH_T2 POS_RH_T5>;
     bindings = <&kp LG(LA(LC(LSHFT)))>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
@@ -1130,34 +1130,34 @@ combos {
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
 
-  // T2+T5
+  // T1+T5
 
   combo_ctrl_tab_switcher_left {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_LH_T2 POS_LH_T5>;
+    key-positions = <POS_LH_T1 POS_LH_T5>;
     bindings = <&mod_tab_chord LCTL LAYER_Cursor>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
 
   combo_meh_ACS_right {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_RH_T2 POS_RH_T5>;
+    key-positions = <POS_RH_T1 POS_RH_T5>;
     bindings = <&kp LA(LC(LSHFT))>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_MIDDY>;
   };
 
-  // T1+T5
+  // T1+T4
 
   combo_sticky_shift_left {
     timeout-ms = <SHIFT_FIRING_DECAY>;
-    key-positions = <POS_LH_T1 POS_LH_T5>;
+    key-positions = <POS_LH_T1 POS_LH_T4>;
     bindings = <&sticky_key_modtap LSFT LSFT>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_INDEX>;
   };
 
   combo_sticky_shift_right {
     timeout-ms = <SHIFT_FIRING_DECAY>;
-    key-positions = <POS_RH_T1 POS_RH_T5>;
+    key-positions = <POS_RH_T1 POS_RH_T4>;
     bindings = <&sticky_key_modtap RSFT RSFT>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_INDEX>;
   };
@@ -1178,18 +1178,18 @@ combos {
     layers = <COMBO_LAYERS_THROUGH_LEFT_INDEX>;
   };
 
-  // T2+T6
+  // T1+T4+T5
 
   combo_caps_lock_left {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_LH_T2 POS_LH_T6>;
+    key-positions = <POS_LH_T1 POS_LH_T4 POS_LH_T5>;
     bindings = <&kp CAPSLOCK>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_INDEX>;
   };
 
   combo_caps_lock_right {
     timeout-ms = <COMBO_FIRING_DECAY>;
-    key-positions = <POS_RH_T2 POS_RH_T6>;
+    key-positions = <POS_RH_T1 POS_RH_T4 POS_RH_T5>;
     bindings = <&kp CAPSLOCK>;
     layers = <COMBO_LAYERS_THROUGH_LEFT_INDEX>;
   };
@@ -4570,8 +4570,8 @@ macros {
      &none             &kp ESC             &kp INS         &kp LS(TAB)             &kp DEL       &none                                                                               &kp C_MEDIA_HOME     &kp C_PLAY    &kp C_PREV    &kp C_NEXT     &kp C_STOP     &kp C_EJECT
      &none             &kp RET           &kp SPACE             &kp TAB            &kp BSPC  &kp K_CALC                                                                                     &kp K_CALC         &kp F7        &kp F8        &kp F9        &kp F10         &kp F13
  &sk LSHFT  &kp LEFT_PINKY_MOD  &kp LEFT_RINGY_MOD  &kp LEFT_MIDDY_MOD  &kp LEFT_INDEX_MOD   &kp K_WWW                                                                                      &kp K_WWW         &kp F4        &kp F5        &kp F6        &kp F11         &kp F14
-     &none         &select_all        &select_line        &select_word           &kp _FIND  &kp _FILES  &tog LAYER_Function   &none   &none  &kp C_PREV      &kp C_PP    &kp C_MUTE        &kp _FILES         &kp F1        &kp F2        &kp F3        &kp F12         &kp F15
-     &none           &kp _UNDO           &kp _REDO      &kp _FIND_PREV      &kp _FIND_NEXT                            &none   &none   &none  &kp C_NEXT  &kp C_VOL_DN  &kp C_VOL_UP                    &kp C_BRI_MAX  &kp C_BRI_UP  &kp C_BRI_DN  &kp C_BRI_MIN  &kp C_BRI_AUTO
+     &none         &select_all        &select_line        &select_word           &kp _FIND  &kp _FILES  &tog LAYER_Function   &none   &none  &kp C_PP        &kp C_PREV  &kp C_NEXT        &kp _FILES         &kp F1        &kp F2        &kp F3        &kp F12         &kp F15
+     &none           &kp _UNDO           &kp _REDO      &kp _FIND_PREV      &kp _FIND_NEXT                            &none   &none   &none  &kp C_MUTE  &kp C_VOL_DN  &kp C_VOL_UP                    &kp C_BRI_MAX  &kp C_BRI_UP  &kp C_BRI_DN  &kp C_BRI_MIN  &kp C_BRI_AUTO
             >;
         };
 
@@ -4579,9 +4579,9 @@ macros {
             bindings = <
          &none          &none         &none          &none          &none                                                                                                                   &none                &none                &none                &none             &none
          &none      &kp GRAVE    &kp LS(N9)     &kp LS(N0)       &kp SEMI     &kp COMMA                                                                               &none                 &none                &none                &none                &none             &none
-    &kp LS(N1)       &kp LBKT  &kp LS(LBKT)   &kp LS(RBKT)       &kp RBKT  &kp LS(FSLH)                                                                             &kp DOT               &kp DEL          &kp LS(TAB)              &kp INS              &kp ESC             &none
-    &kp LS(N3)     &kp LS(N6)     &kp EQUAL  &kp LS(MINUS)     &kp LS(N4)    &kp LS(N8)                                                                           &kp COMMA              &kp BSPC              &kp TAB            &kp SPACE              &kp RET  &triple_backtick
- &kp LS(GRAVE)  &kp LS(COMMA)  &kp LS(BSLH)      &kp MINUS    &kp LS(DOT)      &kp FSLH    &kp BSLH       &kp DOT  &kp LS(N8)   &none   &none              &none   &kp SEMI  &kp LS(SINGLE_QUOTE)              &kp SQT            &kp GRAVE             &kp BSLH            &trans
+    &kp LS(N1)       &kp LBKT  &kp LS(LBKT)   &kp LS(RBKT)       &kp RBKT  &kp LS(FSLH)                                                                             &none                 &kp DEL          &kp LS(TAB)              &kp INS              &kp ESC             &none
+    &kp LS(N3)     &kp LS(N6)     &kp EQUAL  &kp LS(MINUS)     &kp LS(N4)    &kp LS(N8)                                                                           &kp COMMA              &kp BSPC              &kp TAB            &kp SPACE              &kp RET  &kp DOT
+ &kp LS(GRAVE)  &kp LS(COMMA)  &kp LS(BSLH)      &kp MINUS    &kp LS(DOT)      &kp FSLH    &kp BSLH       &kp DOT  &kp LS(N8)   &none   &none              &none   &kp SEMI  &triple_backtick                  &kp LS(SINGLE_QUOTE)  &kp SQT               &kp GRAVE           &kp BSLH
       &dot_dot     &kp LS(N7)       &kp SQT    &kp LS(SQT)  &kp LS(EQUAL)                &kp LS(N5)  &kp LS(SEMI)  &kp LS(N2)   &none   &none  &tog LAYER_Symbol              &kp RIGHT_INDEX_MOD  &kp RIGHT_MIDDY_MOD  &kp RIGHT_RINGY_MOD  &kp RIGHT_PINKY_MOD             &none
             >;
         };
